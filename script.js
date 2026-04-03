@@ -683,7 +683,18 @@ document.addEventListener("DOMContentLoaded", function () {
     var img = document.createElement("img");
     img.src = item.foto;
     img.alt = item.nama;
+    // img.loading = "lazy";var photo = document.createElement("div");
+    photo.className = "menu-card__photo";
+
+    var img = document.createElement("img");
+    img.src = item.foto;
+    img.alt = item.nama;
     img.loading = "lazy";
+    img.onerror = function () {
+      this.src =
+        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
+    };
+
     img.onerror = function () {
       this.src =
         "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
