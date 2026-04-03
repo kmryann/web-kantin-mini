@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Kantin Mini</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- <a class="skip-link" href="#hero">Lewati ke konten</a> -->
+
+    <!-- ===== NAVBAR ===== -->
+    <header class="navbar" id="navbar">
+      <div class="navbar__overlay"></div>
+      <div class="navbar__inner container">
+        <a href="#" class="navbar__logo">
+          <span class="logo-icon"><img src="img/logo.svg" alt="" /></span>
+          <span class="logo-text">Kantin <strong>Mini</strong></span>
+        </a>
+        <nav class="navbar__nav" id="navMenu">
+          <a href="#hero" class="nav-link">Beranda</a>
+          <a href="#about" class="nav-link">Tentang Kami</a>
+          <a href="#menu" class="nav-link">Menu</a>
+          <a href="#contact" class="nav-link">Kontak</a>
+        </nav>
+        <button
+          class="navbar__hamburger"
+          id="hamburger"
+          aria-label="Buka menu navigasi"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero" id="hero">
+      <div class="hero__bg"></div>
+      <div class="hero__inner container">
+        <div class="hero__main">
+          <p class="hero__eyebrow">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path
+                d="M8 1 1 4v1h14V4L8 1zM2 6v6h2V6H2zm3 0v6h2V6H5zm3 0v6h2V6H8zm3 0v6h2V6h-2zM1 13v1h14v-1H1z"
+              />
+            </svg>
+            Berdiri Sejak 1986
+          </p>
+          <h1 class="hero__headline">
+            Cita Rasa Terbaik<br />
+            di <span class="highlight">Kantin Mini</span>
+          </h1>
+          <p class="hero__sub">
+            Nikmati beragam pilihan menu lezat, mulai dari masakan Nusantara,
+            Asia, hingga hidangan modern. <br class="desktop-br" />
+            <br class="desktop-br" />
+            Harga terjangkau, rasa istimewa, dan pelayanan ramah untuk semua
+            pelanggan.
+          </p>
+          <p class="hero__hours">
+            <svg
+              class="hero__hours-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 16 16"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                fill="currentColor"
+                d="M8 3.5a.5.5 0 0 1 .5.5v4.25l2.5 1.5a.5.5 0 0 1-.5.86L7.75 9A.5.5 0 0 1 7.5 8.57V4a.5.5 0 0 1 .5-.5Z"
+              />
+              <path
+                fill="currentColor"
+                d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm0-1A7 7 0 1 1 8 1a7 7 0 0 1 0 14Z"
+              />
+            </svg>
+            Buka 09.00 – 20.00
+          </p>
+          <div class="hero__cta">
+            <a href="#menu" class="btn btn--primary">
+              <svg
+                class="btn__icon"
+                width="20"
+                height="20"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  fill="currentColor"
+                  d="M0 2.5A.5.5 0 01.5 2h2a.5.5 0 01.5.5v11a.5.5 0 01-.5.5h-2a.5.5 0 01-.503-.445L0 14.5V2.5zm3 0A.5.5 0 013.5 2h9a.5.5 0 01.5.5v11a.5.5 0 01-.265.445l-4.5 2.25A.5.5 0 018 15.22l-4.5-2.25A.5.5 0 013.5 13.5v-11a.5.5 0 01-.5-.5zM4 3v10.09l4 2.01 4-2.01V3H4z"
+                />
+              </svg>
+              Lihat Menu Kami
+            </a>
+            <a
+              href="https://wa.me/6281234567890?text=Halo%20Warung%20Nusantara%2C%20saya%20ingin%20bertanya%20tentang%20menu."
+              class="btn btn-whatsapp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                />
+              </svg>
+              Chat WhatsApp
+            </a>
+          </div>
+        </div>
+        <!-- accent aside dihapus -->
+      </div>
+      <div class="hero__scroll-hint">
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
+
+    <!-- ===== ABOUT SECTION ===== -->
+    <section class="about" id="about">
+      <div class="container">
+        <div class="about__grid">
+          <div class="about__carousel-wrap">
+            <div
+              class="about__carousel"
+              id="aboutCarousel"
+              aria-roledescription="carousel"
+              aria-label="Galeri Warung Nusantara"
+            >
+              <div class="about__carousel-viewport">
+                <div class="about__carousel-track" id="aboutCarouselTrack">
+                  <figure class="about__carousel-slide">
+                    <img
+                      src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&h=600&fit=crop"
+                      alt="Suasana Kantin Mini"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </figure>
+                  <figure
+                    class="about__carousel-slide about__carousel-slide--badge"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&h=600&fit=crop"
+                      alt="Chef memasak"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="about__badge">
+                      <span class="badge-num">15+</span>
+                      <span class="badge-text">Tahun<br />Melayani</span>
+                    </div>
+                  </figure>
+                  <figure class="about__carousel-slide">
+                    <img
+                      src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&h=600&fit=crop"
+                      alt="Sajian hidangan otentik"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </figure>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="about__carousel-arrow about__carousel-arrow--prev"
+                id="aboutCarouselPrev"
+                aria-label="Slide sebelumnya"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="about__carousel-arrow about__carousel-arrow--next"
+                id="aboutCarouselNext"
+                aria-label="Slide berikutnya"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+                  />
+                </svg>
+              </button>
+              <div
+                class="about__carousel-dots"
+                id="aboutCarouselDots"
+                aria-label="Indikator slide galeri"
+              ></div>
+            </div>
+          </div>
+          <div class="about__heading">
+            <p class="section-eyebrow">Tentang Kami</p>
+            <h2 class="section-title">
+              Warisan Rasa yang <span class="highlight">Tak Lekang Waktu</span>
+            </h2>
+          </div>
+
+          <div class="about__body">
+            <p class="about__desc">
+              Kantin Mini hadir dengan misi sederhana: menghadirkan cita rasa autentik masakan Nusantara yang dapat dinikmati setiap hari. Kami percaya bahwa makanan yang baik tidak harus mahal, dan pelayanan yang ramah adalah kunci kepuasan pelanggan.
+            </p>
+            <p class="about__desc">
+             Lebih dari sekadar tempat makan, Kantin Mini adalah rumah kedua untuk menikmati kelezatan masakan Indonesia dengan suasana yang hangat dan nyaman.
+            </p>
+            <div class="about__features">
+              <div class="feature-item">
+                <span class="feature-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M1 1h6v6H1V1zm8 0h6v6H9V1zM1 9h6v6H1V9zm8 0h6v6H9V9z"
+                    />
+                  </svg>
+                </span>
+
+                <div>
+                  <strong>Menu Variatif</strong>
+                  <p>
+                    Tersedia beragam pilihan menu, dari tradisional hingga
+                    modern, sesuai selera Anda
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <span class="feature-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M2 2v4l6 6 6-6-6-6H2zm2 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
+                    />
+                  </svg>
+                </span>
+
+                <div>
+                  <strong>Harga Terjangkau</strong>
+                  <p>
+                    Menu berkualitas dengan harga yang ramah di kantong untuk
+                    semua kalangan
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <span class="feature-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M8.5 0L1 9h4l-1 7 7.5-9h-4l1-7z"
+                    />
+                  </svg>
+                </span>
+
+                <div>
+                  <strong>Pelayanan Cepat</strong>
+                  <p>
+                    Sistem pelayanan yang efisien untuk menghemat waktu berharga
+                    Anda
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MENU SECTION ===== -->
+    <section class="menu-section" id="menu">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-eyebrow">Menu Kami</p>
+          <h2 class="section-title">
+            Pilihan <span class="highlight">Terlezat</span> untuk Anda
+          </h2>
+          <p class="section-sub">
+            Dari makanan berat hingga minuman, semua ada di sini.
+          </p>
+        </div>
+
+        <div class="menu__search-wrap">
+          <label class="visually-hidden" for="menuSearch">Cari menu</label>
+          <span class="menu__search-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 16 16" focusable="false">
+              <path
+                fill="currentColor"
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+              />
+            </svg>
+          </span>
+          <input
+            type="search"
+            id="menuSearch"
+            class="menu__search"
+            placeholder="Cari nama menu, kategori, atau deskripsi…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="menu__filters" id="menuFilters">
+          <button class="filter-btn active" data-filter="all">Semua</button>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="menu__grid" id="menuGrid">
+          <!-- Loaded by JS -->
+          <div class="menu__loading" id="menuLoading">
+            <div class="spinner"></div>
+            <p>Memuat menu...</p>
+          </div>
+        </div>
+
+        <div class="menu__error hidden" id="menuError">
+          <p>😕 Gagal memuat menu. Silakan coba lagi.</p>
+          <button class="btn btn--primary" onclick="loadMenu()">
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT SECTION ===== -->
+    <section class="contact" id="contact">
+      <div class="container">
+        <!-- Section Header -->
+        <div class="section-header">
+          <p class="section-eyebrow light">Temukan Kami</p>
+          <h2 class="section-title light">
+            Lokasi &amp; <span class="highlight">Jam Buka</span>
+          </h2>
+          <p
+            class="section-sub"
+            style="color: rgba(255, 255, 255, 0.6); margin: 0 auto"
+          >
+            Kami tunggu kehadiran Anda di <strong> Kantin Mini.</strong>
+          </p>
+        </div>
+
+        <!-- Top Row: Map + Info -->
+        <div class="contact__top">
+          <!-- Google Maps Embed -->
+          <div class="contact__map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.676759802234!2d107.6107678751588!3d-6.929185167825528!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e882680b69e3%3A0xb34a98f14376300e!2sKantin%20Mini!5e0!3m2!1sid!2sid!4v1775229998410!5m2!1sid!2sid"
+              width="100%"
+              height="100%"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Lokasi Kantin Mini"
+            ></iframe>
+            <a
+              href="https://maps.app.goo.gl/pfo4YTDKGGLsf4B86"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="map__open-btn"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  fill="currentColor"
+                  d="M15.817.113A.5.5 0 0 1 16 .5v14.999a.5.5 0 0 1-.74.439L10 13.07l-4.76 2.868A.5.5 0 0 1 4.5 15.5V.5a.5.5 0 0 1 .74-.439L10 2.93l5.26-2.868a.5.5 0 0 1 .557.05ZM10 3.93 5.5 1.2v13.1l4.5-2.7V3.93Z"
+                />
+              </svg>
+              Buka di Google Maps
+            </a>
+          </div>
+
+          <!-- Info Panel -->
+          <div class="contact__info-panel">
+            <!-- Alamat -->
+            <div class="info-card">
+              <div class="info-card__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  focusable="false"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10Zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4>Alamat Kami</h4>
+                <p>
+                  Gg. Melong Kaler I No. 1<br />Kota Bandung, Jawa Barat 40261
+                </p>
+                <a
+                  href="https://maps.app.goo.gl/pfo4YTDKGGLsf4B86"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="info-card__link"
+                  >Petunjuk Arah →</a
+                >
+              </div>
+            </div>
+
+            <!-- Jam Operasional -->
+            <div class="info-card">
+              <div class="info-card__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  focusable="false"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M8 3.5a.5.5 0 0 1 .5.5v4.25l2.5 1.5a.5.5 0 0 1-.5.86L7.75 9A.5.5 0 0 1 7.5 8.57V4a.5.5 0 0 1 .5-.5Z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm0-1A7 7 0 1 1 8 1a7 7 0 0 1 0 14Z"
+                  />
+                </svg>
+              </div>
+              <div style="width: 100%">
+                <h4>Jam Operasional</h4>
+                <div class="hours__table">
+                  <div class="hours__row">
+                    <span class="hours__day">Senin – Jumat</span>
+                    <span class="hours__time open">09.00 – 20.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Telepon -->
+            <div class="info-card">
+              <div class="info-card__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  focusable="false"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M3.654 1.328a.678.678 0 0 1 .58-.093l2.547.85c.247.083.41.314.381.571l-.26 2.2a.678.678 0 0 1-.465.564l-1.067.356a11.745 11.745 0 0 0 5.516 5.516l.356-1.067a.678.678 0 0 1 .564-.465l2.2-.26a.678.678 0 0 1 .571.381l.85 2.547a.678.678 0 0 1-.093.58l-1.272 1.272c-.329.329-.833.45-1.253.294a17.568 17.568 0 0 1-6.012-3.54A17.568 17.568 0 0 1 2.088 3.853c-.156-.42-.035-.924.294-1.253L3.654 1.328Z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4>Telepon</h4>
+                <p>0851-1769-3117</p>
+                <p style="font-size: 0.8rem; opacity: 0.7">Via WhatsApp</p>
+              </div>
+            </div>
+
+            <!-- Instagram -->
+            <div class="info-card">
+              <div class="info-card__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  focusable="false"
+                >
+                  <path
+                    d="M7.75 2C4.574 2 2 4.574 2 7.75v8.5C2 19.426 4.574 22 7.75 22h8.5C19.426 22 22 19.426 22 16.25v-8.5C22 4.574 19.426 2 16.25 2h-8.5zm0 2h8.5A3.75 3.75 0 0 1 20 7.75v8.5A3.75 3.75 0 0 1 16.25 20h-8.5A3.75 3.75 0 0 1 4 16.25v-8.5A3.75 3.75 0 0 1 7.75 4zm9.5 1.75a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4>Instagram</h4>
+                <p>@kantinmini.id</p>
+                <a
+                  href="https://instagram.com/kantinmini.id"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="info-card__link"
+                >
+                  Kunjungi Instagram →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA WhatsApp Banner -->
+        <div class="contact__cta-banner">
+          <div class="cta-banner__text">
+            <!-- <span class="cta-banner__emoji">🍽️</span> -->
+            <div>
+              <h3>Siap Memesan atau Reservasi?</h3>
+              <p>
+                Hubungi kami langsung via WhatsApp — respons cepat, proses
+                mudah!
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://wa.me/6281234567890?text=Halo%20Warung%20Nusantara%2C%20saya%20ingin%20memesan%20meja%20%F0%9F%8D%BD%EF%B8%8F"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-whatsapp"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+              />
+            </svg>
+            Chat WhatsApp Sekarang
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <a href="#" class="navbar__logo">
+              <span class="logo-icon-footer"
+                ><img src="img/logo.svg" alt=""
+              /></span>
+              <span class="logo-text-footer">Kantin <strong>Mini</strong></span>
+            </a>
+            <p>
+              Menghadirkan cita rasa autentik Nusantara dengan penuh cinta dan
+              kebanggaan sejak 2009.
+            </p>
+          </div>
+          <div class="footer__links">
+            <h4>Navigasi</h4>
+            <ul>
+              <li><a href="#hero">Beranda</a></li>
+              <li><a href="#about">Tentang Kami</a></li>
+              <li><a href="#menu">Menu</a></li>
+              <li><a href="#contact">Kontak</a></li>
+            </ul>
+          </div>
+          <div class="footer__links">
+            <h4>Layanan</h4>
+            <ul>
+              <li><a>Dine-In</a></li>
+              <li><a>Take Away</a></li>
+              <li><a>Delivery</a></li>
+              <li><a>Catering</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <p>&copy; 2026 Kantin Mini. Semua hak dilindungi.</p>
+          <p>Dibuat dengan Cinta❤️ untuk pecinta kuliner Indonesia.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ===== MENU DETAIL MODAL ===== -->
+    <div class="menu-modal" id="menuModal" hidden aria-hidden="true">
+      <div class="menu-modal__backdrop" data-modal-close tabindex="-1"></div>
+      <div
+        class="menu-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="menuModalTitle"
+      >
+        <button
+          type="button"
+          class="menu-modal__close"
+          id="menuModalClose"
+          aria-label="Tutup detail menu"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              fill="currentColor"
+              d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+            />
+          </svg>
+        </button>
+        <div class="menu-modal__media">
+          <img id="menuModalImg" src="" alt="" width="640" height="640" />
+        </div>
+        <div class="menu-modal__body">
+          <p class="menu-modal__cat" id="menuModalCat"></p>
+          <p class="menu-modal__best" id="menuModalBest" hidden>Best Seller</p>
+          <h3 class="menu-modal__title" id="menuModalTitle"></h3>
+          <p class="menu-modal__price" id="menuModalPrice"></p>
+          <p class="menu-modal__desc" id="menuModalDesc"></p>
+          <a
+            class="menu-modal__wa"
+            id="menuModalWa"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Pesan via WhatsApp</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
