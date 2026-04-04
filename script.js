@@ -177,7 +177,7 @@ var MENU_DATA = [
   {
     id: 23,
     nama: "Spaghetti Carbonara",
-    kategori: "Light Bites",
+    kategori: "Mie & Pasta",
     harga: 15000,
     deskripsi: "Spaghetti creamy saus carbonara gurih",
     foto: "img/foto-menu/carbonara.webp",
@@ -185,7 +185,7 @@ var MENU_DATA = [
   {
     id: 24,
     nama: "Mie Tektek",
-    kategori: "Light Bites",
+    kategori: "Mie & Pasta",
     harga: 15000,
     deskripsi: "Mie goreng pedas gurih ala kaki lima",
     foto: "img/foto-menu/mie-tektek.webp",
@@ -193,7 +193,7 @@ var MENU_DATA = [
   {
     id: 25,
     nama: "Kwetiau Goreng",
-    kategori: "Light Bites",
+    kategori: "Mie & Pasta",
     harga: 15000,
     deskripsi: "Kwetiau goreng spesial",
     foto: "img/foto-menu/kwetiau-goreng.webp",
@@ -201,7 +201,7 @@ var MENU_DATA = [
   {
     id: 26,
     nama: "Kwetiau Kuah",
-    kategori: "Light Bites",
+    kategori: "Mie & Pasta",
     harga: 15000,
     deskripsi: "Kwetiau kuah gurih",
     foto: "img/foto-menu/kwetiau-kuah.webp",
@@ -209,7 +209,7 @@ var MENU_DATA = [
   {
     id: 27,
     nama: "Mie Goreng/Kuah",
-    kategori: "Light Bites",
+    kategori: "Mie & Pasta",
     harga: 6500,
     deskripsi: "Mie goreng/kuah spesial",
     foto: "img/foto-menu/mie-gorengrebus.webp",
@@ -324,10 +324,14 @@ var MENU_DATA = [
 document.addEventListener("DOMContentLoaded", function () {
   /* --- Utility --- */
   function qs(sel, ctx) {
-    return (ctx || document).querySelector(sel);
+    var root = ctx !== undefined ? ctx : document;
+    if (!root || typeof root.querySelector !== "function") return null;
+    return root.querySelector(sel);
   }
   function qsa(sel, ctx) {
-    return Array.from((ctx || document).querySelectorAll(sel));
+    var root = ctx !== undefined ? ctx : document;
+    if (!root || typeof root.querySelectorAll !== "function") return [];
+    return Array.from(root.querySelectorAll(sel));
   }
   function formatRupiah(num) {
     return "Rp " + Number(num).toLocaleString("id-ID");
@@ -349,35 +353,29 @@ document.addEventListener("DOMContentLoaded", function () {
   if (hamburger && navMenu) {
     hamburger.setAttribute("aria-controls", "navMenu");
     hamburger.setAttribute("aria-expanded", "false");
+    hamburger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = hamburger.classList.toggle("open");
+      navMenu.classList.toggle("open", open);
+      hamburger.setAttribute("aria-expanded", open ? "true" : "false");
+    });
   }
 
-  window.addEventListener(
-    "scroll",
-    function () {
-      navbar.classList.toggle("scrolled", window.scrollY > 40);
-      highlightActiveLink();
-    },
-    { passive: true },
-  );
-
-  hamburger.addEventListener("click", function () {
-    var open = hamburger.classList.toggle("open");
-    navMenu.classList.toggle("open", open);
-    hamburger.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-
-  navMenu.addEventListener("click", function (e) {
-    if (e.target.classList.contains("nav-link")) {
-      hamburger.classList.remove("open");
-      navMenu.classList.remove("open");
-    }
-  });
+  if (navMenu) {
+    navMenu.addEventListener("click", function (e) {
+      if (e.target.closest(".nav-link")) {
+        if (hamburger) hamburger.classList.remove("open");
+        navMenu.classList.remove("open");
+        if (hamburger) hamburger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
 
   document.addEventListener("click", function (e) {
-    if (!navbar.contains(e.target)) {
-      hamburger.classList.remove("open");
-      navMenu.classList.remove("open");
-      hamburger.setAttribute("aria-expanded", "false");
+    if (!navbar || !navbar.contains(e.target)) {
+      if (hamburger) hamburger.classList.remove("open");
+      if (navMenu) navMenu.classList.remove("open");
+      if (hamburger) hamburger.setAttribute("aria-expanded", "false");
     }
   });
 
@@ -433,13 +431,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (descEl) descEl.textContent = item.deskripsi;
     if (waEl) {
       var msg = encodeURIComponent(
-        "Halo Warung Nusantara, saya ingin pesan: " +
+        "Halo Kantin Mini, saya ingin pesan: " +
           item.nama +
           " (" +
           formatRupiah(item.harga) +
           ")",
       );
-      waEl.href = "https://wa.me/6281234567890?text=" + msg;
+      waEl.href = "https://wa.me/6285117693117?text=" + msg;
     }
     menuModal.removeAttribute("hidden");
     menuModal.setAttribute("aria-hidden", "false");
@@ -463,9 +461,9 @@ document.addEventListener("DOMContentLoaded", function () {
       closeMenuModal();
       return;
     }
-    hamburger.classList.remove("open");
-    navMenu.classList.remove("open");
-    hamburger.setAttribute("aria-expanded", "false");
+    if (hamburger) hamburger.classList.remove("open");
+    if (navMenu) navMenu.classList.remove("open");
+    if (hamburger) hamburger.setAttribute("aria-expanded", "false");
   });
 
   function highlightActiveLink() {
@@ -475,26 +473,47 @@ document.addEventListener("DOMContentLoaded", function () {
       if (sec.offsetTop <= scrollY) current = sec.id;
     });
     navLinks.forEach(function (link) {
-      var href = link.getAttribute("href").replace("#", "");
-      link.classList.toggle("active", href === current);
+      var href = link.getAttribute("href");
+      if (!href || href.charAt(0) !== "#") return;
+      link.classList.toggle("active", href.slice(1) === current);
     });
   }
 
   highlightActiveLink();
 
   /* ============================================================
-     2. SMOOTH SCROLL
+     2. SMOOTH SCROLL (offset navbar; hindari querySelector("#") yang invalid)
      ============================================================ */
   qsa('a[href^="#"]').forEach(function (link) {
     link.addEventListener("click", function (e) {
-      var id = link.getAttribute("href");
-      var target = document.querySelector(id);
+      var href = link.getAttribute("href") || "";
+      if (href === "#" || href === "") {
+        e.preventDefault();
+        var reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        window.scrollTo({
+          top: 0,
+          behavior: reduceMotion ? "auto" : "smooth",
+        });
+        return;
+      }
+      var id = href.slice(1);
+      if (!id) return;
+      var target = document.getElementById(id);
       if (!target) return;
       e.preventDefault();
       var navEl = qs("#navbar");
       var navH = navEl && navEl.offsetHeight ? navEl.offsetHeight : 72;
-      var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      // window.scrollTo({ top: top, behavior: "smooth" });
+      var top =
+        target.getBoundingClientRect().top + window.scrollY - navH - 8;
+      var reduceMotion2 = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: reduceMotion2 ? "auto" : "smooth",
+      });
     });
   });
 
@@ -506,10 +525,12 @@ document.addEventListener("DOMContentLoaded", function () {
   var activeMenuFilter = "all";
   var menuSearchInput = qs("#menuSearch");
   var bestSellerIds = [];
+  var menuRevealObserver = null;
 
   function loadMenu() {
     var grid = qs("#menuGrid");
     var loading = qs("#menuLoading");
+    if (!grid) return;
 
     qsa(".menu-card", grid).forEach(function (c) {
       c.remove();
@@ -531,7 +552,7 @@ document.addEventListener("DOMContentLoaded", function () {
     buildFilterButtons(allMenuItems);
     applyMenuView();
 
-    loading.classList.add("hidden");
+    if (loading) loading.classList.add("hidden");
   }
 
   // expose for retry button in HTML
@@ -573,8 +594,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function buildFilterButtons(items) {
     var filtersEl = qs("#menuFilters");
-    var categories = [];
+    if (!filtersEl) return;
 
+    var categories = [];
     items.forEach(function (item) {
       if (categories.indexOf(item.kategori) === -1)
         categories.push(item.kategori);
@@ -626,6 +648,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderCards(items, searchQuery, baseCategoryCount) {
     var grid = qs("#menuGrid");
     var loading = qs("#menuLoading");
+    if (!grid) return;
 
     qsa(".menu-card", grid).forEach(function (c) {
       c.remove();
@@ -633,6 +656,14 @@ document.addEventListener("DOMContentLoaded", function () {
     qsa(".menu__empty", grid).forEach(function (c) {
       c.remove();
     });
+
+    function insertIntoGrid(node) {
+      if (loading && loading.parentNode === grid) {
+        grid.insertBefore(node, loading);
+      } else {
+        grid.appendChild(node);
+      }
+    }
 
     if (items.length === 0) {
       var empty = document.createElement("p");
@@ -651,12 +682,12 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         empty.textContent = "Tidak ada menu untuk ditampilkan.";
       }
-      grid.insertBefore(empty, loading);
+      insertIntoGrid(empty);
       return;
     }
 
     items.forEach(function (item, idx) {
-      grid.insertBefore(createCard(item, idx), loading);
+      insertIntoGrid(createCard(item, idx));
     });
   }
 
@@ -694,7 +725,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var badge = document.createElement("span");
     badge.className = "menu-card__badge";
     badge.textContent = item.kategori;
-    badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/\s+/g, "-"));
+    // badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/\s+/g, "-"));
+    badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
 
     var isBestSeller = bestSellerIds && bestSellerIds.indexOf(item.id) !== -1;
     if (isBestSeller) {
@@ -731,6 +763,13 @@ document.addEventListener("DOMContentLoaded", function () {
     body.appendChild(footer);
     card.appendChild(photo);
     card.appendChild(body);
+
+    if (menuRevealObserver) {
+      card.style.opacity = "0";
+      card.style.transform = "translateY(20px)";
+      card.style.transition = "all 0.6s ease-out";
+      menuRevealObserver.observe(card);
+    }
 
     return card;
   }
@@ -786,22 +825,28 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function initReveal() {
-    var els = qsa(".section-header, .menu-card, .contact__top");
     if (!window.IntersectionObserver) return;
-    var obs = new IntersectionObserver(function (entries) {
+
+    menuRevealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
-        }
+        if (!entry.isIntersecting) return;
+        entry.target.style.opacity = "1";
+        entry.target.style.transform = "translateY(0)";
+        menuRevealObserver.unobserve(entry.target);
       });
     }, { threshold: 0.1 });
-    els.forEach(function (el) {
+
+    function bindReveal(el) {
+      if (!el) return;
       el.style.opacity = "0";
       el.style.transform = "translateY(20px)";
       el.style.transition = "all 0.6s ease-out";
-      obs.observe(el);
-    });
+      menuRevealObserver.observe(el);
+    }
+
+    qsa(".section-header").forEach(bindReveal);
+    qsa(".contact__top").forEach(bindReveal);
+    qsa(".menu-card", qs("#menuGrid")).forEach(bindReveal);
   }
 
   /* --- Eksekusi Akhir --- */
@@ -810,17 +855,21 @@ document.addEventListener("DOMContentLoaded", function () {
   initReveal();
   updateOpenStatus();
 
-  // Optimasi Scroll
-  let ticking = false;
-  window.addEventListener("scroll", function () {
-    if (!ticking) {
-      window.requestAnimationFrame(function() {
-        navbar.classList.toggle("scrolled", window.scrollY > 40);
-        highlightActiveLink();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
+  var scrollTicking = false;
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!navbar) return;
+      if (!scrollTicking) {
+        scrollTicking = true;
+        window.requestAnimationFrame(function () {
+          navbar.classList.toggle("scrolled", window.scrollY > 40);
+          highlightActiveLink();
+          scrollTicking = false;
+        });
+      }
+    },
+    { passive: true },
+  );
 
 }); // Penutup DOMContentLoaded

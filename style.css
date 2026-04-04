@@ -50,6 +50,7 @@ body {
   color: var(--gray-800);
   line-height: 1.6;
   overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
 
 img {
@@ -71,6 +72,11 @@ ul {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+/* Anchor scroll + navbar fixed */
+section[id] {
+  scroll-margin-top: calc(var(--navbar-h) + 8px);
 }
 
 .hidden {
@@ -285,7 +291,7 @@ ul {
 
 .navbar__inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -431,6 +437,7 @@ ul {
 .hero__bg {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background-image: url("img/hero-kantin.png");
   background-size: cover;
   background-position: center;
@@ -439,8 +446,10 @@ ul {
   transition: transform 8s ease;
 }
 
-.hero:hover .hero__bg {
-  transform: scale(1);
+@media (hover: hover) and (pointer: fine) {
+  .hero:hover .hero__bg {
+    transform: scale(1);
+  }
 }
 
 /* Subtle overlay for color accent */
@@ -448,6 +457,7 @@ ul {
   content: "";
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background: linear-gradient(
     135deg,
     rgba(19, 72, 66, 0.5) 0%,
@@ -656,6 +666,7 @@ ul {
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
+  pointer-events: none;
 }
 
 .scroll-arrow {
@@ -1101,14 +1112,19 @@ ul {
   background: #ee521f;
 }
 
+.cat-mie-pasta {
+  background: brown;
+}
+
 /* snack */
 .cat-light-bites {
-  background: #f59e0b;
+  background: white;
+  color: black;
 }
 
 /* pempek */
 .cat-pempek {
-  background: #134842;
+  background: green;
 }
 
 /* fried chicken */
@@ -1866,6 +1882,8 @@ body.modal-open {
     transform: translateY(-125%);
     transition: transform var(--transition);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    visibility: hidden;
   }
 
   @media (max-width: 768px) {
@@ -1876,6 +1894,8 @@ body.modal-open {
 
   .navbar__nav.open {
     transform: translateY(0);
+    pointer-events: auto;
+    visibility: visible;
   }
 
   .nav-link {
@@ -1893,7 +1913,8 @@ body.modal-open {
   }
 
   .hero {
-    min-height: 100dvh;
+    /* 100svh stabil saat bilah alamat mobile muncul/hilang — kurangi “loncat” scroll */
+    min-height: 100svh;
     justify-content: center;
     padding-top: calc(var(--navbar-h) + 4px);
     padding-bottom: max(16px, env(safe-area-inset-bottom, 0px) + 12px);
@@ -2081,8 +2102,4 @@ body.modal-open {
     transform: none !important;
     opacity: 1 !important;
   }
-}
-
-* {
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
