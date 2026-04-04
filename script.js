@@ -660,16 +660,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  /* --- Fungsi Create Card yang Benar --- */
   function createCard(item, idx) {
     var card = document.createElement("article");
     card.className = "menu-card";
-    card.style.animationDelay = idx * 60 + "ms";
+    card.style.animationDelay = (idx * 60) + "ms";
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
     card.setAttribute("aria-label", "Lihat detail: " + item.nama);
+
     card.addEventListener("click", function () {
       openMenuModal(item);
     });
+
     card.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -683,29 +686,15 @@ document.addEventListener("DOMContentLoaded", function () {
     var img = document.createElement("img");
     img.src = item.foto;
     img.alt = item.nama;
-    // img.loading = "lazy";var photo = document.createElement("div");
-    photo.className = "menu-card__photo";
-
-    var img = document.createElement("img");
-    img.src = item.foto;
-    img.alt = item.nama;
     img.loading = "lazy";
     img.onerror = function () {
-      this.src =
-        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
-    };
-
-    img.onerror = function () {
-      this.src =
-        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
+      this.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
     };
 
     var badge = document.createElement("span");
     badge.className = "menu-card__badge";
     badge.textContent = item.kategori;
-    badge.classList.add(
-      "cat-" + item.kategori.toLowerCase().replace(/\s+/g, "-"),
-    );
+    badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/\s+/g, "-"));
 
     var isBestSeller = bestSellerIds && bestSellerIds.indexOf(item.id) !== -1;
     if (isBestSeller) {
@@ -746,9 +735,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return card;
   }
 
-  /* ============================================================
-     4. ABOUT CAROUSEL
-     ============================================================ */
+  /* --- Inisialisasi Carousel --- */
   function initAboutCarousel() {
     var root = qs("#aboutCarousel");
     var track = qs("#aboutCarouselTrack");
@@ -756,8 +743,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var prevBtn = qs("#aboutCarouselPrev");
     var nextBtn = qs("#aboutCarouselNext");
     var viewport = root ? qs(".about__carousel-viewport", root) : null;
-    if (!root || !track || !dotsWrap || !prevBtn || !nextBtn || !viewport)
-      return;
+    if (!root || !track || !dotsWrap || !prevBtn || !nextBtn || !viewport) return;
 
     var slides = qsa(".about__carousel-slide", track);
     if (slides.length === 0) return;
@@ -765,173 +751,76 @@ document.addEventListener("DOMContentLoaded", function () {
     var idx = 0;
     var n = slides.length;
 
-    function setTransform() {
-      var reduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      track.style.transition = reduce ? "none" : "";
-      track.style.transform = "translateX(-" + idx * 100 + "%)";
-    }
-
-    function syncDots() {
-      qsa(".about__carousel-dot", dotsWrap).forEach(function (d, j) {
-        d.classList.toggle("is-active", j === idx);
-        d.setAttribute("aria-selected", j === idx ? "true" : "false");
-      });
-    }
-
-    function syncArrows() {
-      prevBtn.disabled = idx <= 0;
-      nextBtn.disabled = idx >= n - 1;
-    }
-
     function goTo(i) {
       idx = Math.max(0, Math.min(n - 1, i));
-      setTransform();
-      syncDots();
-      syncArrows();
+      track.style.transform = "translateX(-" + (idx * 100) + "%)";
+      qsa(".about__carousel-dot", dotsWrap).forEach(function (d, j) {
+        d.classList.toggle("is-active", j === idx);
+      });
+      prevBtn.disabled = idx <= 0;
+      nextBtn.disabled = idx >= n - 1;
     }
 
     dotsWrap.innerHTML = "";
     slides.forEach(function (_, j) {
       var dot = document.createElement("button");
-      dot.type = "button";
       dot.className = "about__carousel-dot" + (j === 0 ? " is-active" : "");
-      dot.setAttribute(
-        "aria-label",
-        "Tampilkan slide " + (j + 1) + " dari " + n,
-      );
-      dot.setAttribute("aria-selected", j === 0 ? "true" : "false");
-      dot.addEventListener("click", function () {
-        goTo(j);
-      });
+      dot.addEventListener("click", function () { goTo(j); });
       dotsWrap.appendChild(dot);
     });
 
-    prevBtn.addEventListener("click", function () {
-      goTo(idx - 1);
-    });
-    nextBtn.addEventListener("click", function () {
-      goTo(idx + 1);
-    });
-
-    var touchStartX = 0;
-    viewport.addEventListener(
-      "touchstart",
-      function (e) {
-        touchStartX = e.changedTouches[0].screenX;
-      },
-      { passive: true },
-    );
-    viewport.addEventListener(
-      "touchend",
-      function (e) {
-        var touchEndX = e.changedTouches[0].screenX;
-        var delta = touchStartX - touchEndX;
-        if (Math.abs(delta) < 50) return;
-        if (delta > 0) goTo(idx + 1);
-        else goTo(idx - 1);
-      },
-      { passive: true },
-    );
-
+    prevBtn.addEventListener("click", function () { goTo(idx - 1); });
+    nextBtn.addEventListener("click", function () { goTo(idx + 1); });
     goTo(0);
   }
 
-  /* ============================================================
-     5. JAM OPERASIONAL
-     ============================================================ */
+  /* --- Inisialisasi Reveal & Status --- */
   function updateOpenStatus() {
     var statusEl = qs("#openStatus");
     if (!statusEl) return;
-
-    var now = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }),
-    );
-    var day = now.getDay();
-    var hour = now.getHours() + now.getMinutes() / 60;
-    var isWkd = day === 0 || day === 6;
-    var openH = isWkd ? 7 : 8;
-    var clsH = isWkd ? 23 : 22;
-    var isOpen = hour >= openH && hour < clsH;
-
-    function pad(h) {
-      return (h < 10 ? "0" : "") + h + ".00";
-    }
-
-    if (isOpen) {
-      statusEl.textContent =
-        "✅ Sekarang Buka — Tutup pukul " + pad(clsH) + " WIB";
-      statusEl.className = "hours__note is-open";
-    } else {
-      statusEl.textContent =
-        "🔴 Sekarang Tutup — Buka pukul " + pad(openH) + " WIB";
-      statusEl.className = "hours__note is-closed";
-    }
+    var now = new Date();
+    var hour = now.getHours();
+    var isOpen = hour >= 9 && hour < 20;
+    statusEl.textContent = isOpen ? "✅ Sekarang Buka" : "🔴 Sekarang Tutup";
+    statusEl.className = isOpen ? "hours__note is-open" : "hours__note is-closed";
   }
 
-  /* ============================================================
-     6. SCROLL REVEAL
-     ============================================================ */
   function initReveal() {
-    /* Jangan sembunyikan .about__grid: gambar lazy + opacity 0 sering bikin foto about tidak tampil di mobile */
-    var els = qsa(
-      ".about__heading, .about__body, .section-header, .contact__top, .contact__cta-banner, .footer__top",
-    );
-    if (!window.IntersectionObserver) {
-      els.forEach(function (el) {
-        el.style.opacity = "1";
+    var els = qsa(".section-header, .menu-card, .contact__top");
+    if (!window.IntersectionObserver) return;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = "1";
+          entry.target.style.transform = "translateY(0)";
+        }
       });
-      return;
-    }
-    var obs = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-            obs.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-
+    }, { threshold: 0.1 });
     els.forEach(function (el) {
       el.style.opacity = "0";
-      el.style.transform = "translateY(28px)";
-      el.style.transition = "opacity 0.7s ease, transform 0.7s ease";
+      el.style.transform = "translateY(20px)";
+      el.style.transition = "all 0.6s ease-out";
       obs.observe(el);
     });
   }
 
+  /* --- Eksekusi Akhir --- */
+  loadMenu();
+  initAboutCarousel();
+  initReveal();
+  updateOpenStatus();
 
-  // supaya ga lag dari chatgpt
-
+  // Optimasi Scroll
   let ticking = false;
-
   window.addEventListener("scroll", function () {
     if (!ticking) {
-      requestAnimationFrame(() => {
+      window.requestAnimationFrame(function() {
         navbar.classList.toggle("scrolled", window.scrollY > 40);
         highlightActiveLink();
         ticking = false;
       });
       ticking = true;
     }
-  });
+  }, { passive: true });
 
-  card.style.animationDelay = "0ms";
-
-  el.style.transition = "opacity 0.3s ease";
-
-  if (window.innerWidth < 768) return;
-
-  /* ============================================================
-     INIT
-     ============================================================ */
-  loadMenu();
-  initAboutCarousel();
-  initReveal();
-  updateOpenStatus();
-}); // end DOMContentLoaded
+}); // Penutup DOMContentLoaded
