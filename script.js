@@ -494,7 +494,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var navEl = qs("#navbar");
       var navH = navEl && navEl.offsetHeight ? navEl.offsetHeight : 72;
       var top = target.getBoundingClientRect().top + window.scrollY - navH;
-      window.scrollTo({ top: top, behavior: "smooth" });
+      // window.scrollTo({ top: top, behavior: "smooth" });
     });
   });
 
@@ -904,6 +904,28 @@ document.addEventListener("DOMContentLoaded", function () {
       obs.observe(el);
     });
   }
+
+
+  // supaya ga lag dari chatgpt
+
+  let ticking = false;
+
+  window.addEventListener("scroll", function () {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        navbar.classList.toggle("scrolled", window.scrollY > 40);
+        highlightActiveLink();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  card.style.animationDelay = "0ms";
+
+  el.style.transition = "opacity 0.3s ease";
+
+  if (window.innerWidth < 768) return;
 
   /* ============================================================
      INIT

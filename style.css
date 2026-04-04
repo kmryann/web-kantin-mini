@@ -664,7 +664,8 @@ ul {
   border-right: 2px solid rgba(255, 255, 255, 0.5);
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   transform: rotate(45deg);
-  animation: scrollBounce 1.5s ease-in-out infinite;
+  /* animation: scrollBounce 1.5s ease-in-out infinite; */
+  animation: none;
 }
 
 @keyframes scrollBounce {
@@ -1096,28 +1097,28 @@ ul {
 /* kategori */
 
 /* makanan utama */
-.cat-paket-nasi{
-  background:#EE521F;
+.cat-paket-nasi {
+  background: #ee521f;
 }
 
 /* snack */
-.cat-light-bites{
-  background:#F59E0B;
+.cat-light-bites {
+  background: #f59e0b;
 }
 
 /* pempek */
-.cat-pempek{
-  background:#134842;
+.cat-pempek {
+  background: #134842;
 }
 
 /* fried chicken */
-.cat-kapten-chicken{
-  background:#F97316;
+.cat-kapten-chicken {
+  background: #f97316;
 }
 
 /* minuman */
-.cat-minuman{
-  background:#2563EB;
+.cat-minuman {
+  background: #2563eb;
 }
 
 /* Best Seller tag (pojok kanan atas) */
@@ -1353,7 +1354,7 @@ body.modal-open {
   transition: var(--transition);
 }
 
-.menu-modal__wa:hover{
+.menu-modal__wa:hover {
   background: #20bd5a;
   transform: translateY(-3px) scale(1.03);
   box-shadow: 0 10px 32px rgba(37, 211, 102, 0.5);
@@ -1867,6 +1868,12 @@ body.modal-open {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
+  @media (max-width: 768px) {
+    * {
+      backdrop-filter: none !important;
+    }
+  }
+
   .navbar__nav.open {
     transform: translateY(0);
   }
@@ -2074,4 +2081,8 @@ body.modal-open {
     transform: none !important;
     opacity: 1 !important;
   }
+}
+
+* {
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
