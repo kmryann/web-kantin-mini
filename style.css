@@ -1138,7 +1138,7 @@ section[id] {
 }
 
 /* Best Seller tag (pojok kanan atas) */
-.menu-card__best {
+/* .menu-card__best {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -1152,7 +1152,7 @@ section[id] {
   backdrop-filter: blur(4px);
   text-transform: uppercase;
   z-index: 4;
-}
+} */
 
 /* Card Body */
 .menu-card__body {
