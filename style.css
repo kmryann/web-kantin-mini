@@ -442,13 +442,13 @@ section[id] {
   background-size: cover;
   background-position: center;
   filter: brightness(0.35);
-  transform: scale(1.05);
-  transition: transform 8s ease;
+  /* transform: scale(1.05); */
+  /* transition: transform 8s ease; */
 }
 
 @media (hover: hover) and (pointer: fine) {
   .hero:hover .hero__bg {
-    transform: scale(1);
+    /* transform: scale(1); */
   }
 }
 
@@ -475,7 +475,7 @@ section[id] {
   gap: 0;
   align-items: center;
   justify-content: center;
-  animation: fadeUp 0.9s ease both;
+  /* animation: fadeUp 0.9s ease both; */
 }
 
 .hero__main {
@@ -564,7 +564,7 @@ section[id] {
   }
 }
 
-@keyframes fadeUp {
+/* @keyframes fadeUp {
   from {
     opacity: 0;
     transform: translateY(32px);
@@ -573,7 +573,7 @@ section[id] {
     opacity: 1;
     transform: translateY(0);
   }
-}
+} */
 
 .hero__eyebrow {
   display: inline-flex;
@@ -588,7 +588,7 @@ section[id] {
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 8px 18px;
   border-radius: 50px;
-  backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); */
 }
 
 .hero__headline {
@@ -630,7 +630,7 @@ section[id] {
   border-radius: 50px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); */
   width: fit-content;
 }
 
@@ -675,8 +675,8 @@ section[id] {
   border-right: 2px solid rgba(255, 255, 255, 0.5);
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   transform: rotate(45deg);
-  /* animation: scrollBounce 1.5s ease-in-out infinite; */
-  animation: none;
+  animation: scrollBounce 2s ease-in-out infinite;
+  /* animation: none;   */
 }
 
 @keyframes scrollBounce {
