@@ -438,7 +438,7 @@ section[id] {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: url("img/hero-kantin.png");
+  background-image: url("img/hero/hero-kantin-lg.webp");
   background-size: cover;
   background-position: center;
   filter: brightness(0.35);
@@ -1814,6 +1814,11 @@ body.modal-open {
    ============================================================ */
 @media (max-width: 900px) {
   /* Tablet & mobile: judul → gambar → paragraf (DOM: carousel → heading → body) */
+
+  .hero__bg {
+    background-image: url("img/hero/hero-kantin-sm.webp");
+  }
+
   .about__grid {
     display: flex;
     flex-direction: column;
@@ -1966,6 +1971,8 @@ body.modal-open {
     max-width: none;
     text-align: center;
   }
+
+  
 
   .hero__hours {
     font-size: 0.8rem;
