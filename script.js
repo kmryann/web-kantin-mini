@@ -10,7 +10,7 @@ var MENU_DATA = [
     nama: "Chicken Katsu",
     kategori: "Paket Nasi",
     harga: 16000,
-    deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava",
+    deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava/Sambal Geprek",
     foto: "img/foto-menu/katsu-bbq.webp",
     // bestSeller: true,
   },

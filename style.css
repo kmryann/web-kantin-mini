@@ -446,11 +446,11 @@ section[id] {
   /* transition: transform 8s ease; */
 }
 
-@media (hover: hover) and (pointer: fine) {
+/* @media (hover: hover) and (pointer: fine) {
   .hero:hover .hero__bg {
-    /* transform: scale(1); */
+    transform: scale(1);
   }
-}
+} */
 
 /* Subtle overlay for color accent */
 .hero::after {
@@ -1174,6 +1174,7 @@ section[id] {
   margin-bottom: 14px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
