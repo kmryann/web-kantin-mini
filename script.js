@@ -762,7 +762,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!toastEl) return;
         toastEl.classList.remove("is-show");
       },
-      reduceMotion ? 1100 : 1700,
+      reduceMotion ? 2100 : 2700,
     );
   }
 
