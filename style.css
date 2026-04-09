@@ -1237,6 +1237,7 @@ body.modal-open {
   align-items: flex-end;
   justify-content: center;
   padding: 0;
+  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   pointer-events: none;
   opacity: 0;
@@ -1278,8 +1279,8 @@ body.modal-open {
 
 .menu-modal__close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: max(12px, calc(env(safe-area-inset-top, 0px) + 8px));
+  right: max(12px, env(safe-area-inset-right, 0px));
   z-index: 2;
   width: 40px;
   height: 40px;
@@ -1305,12 +1306,19 @@ body.modal-open {
   aspect-ratio: 16 / 10;
   background: var(--gray-100);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* iOS: hindari crop vertikal saat sheet tinggi + flex */
+  min-height: 0;
 }
 
 .menu-modal__media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center center;
   display: block;
 }
 
@@ -1381,8 +1389,10 @@ body.modal-open {
 @media (min-width: 640px) {
   .menu-modal {
     align-items: center;
-    padding: 24px;
-    padding-bottom: 24px;
+    padding: max(24px, env(safe-area-inset-top, 0px))
+      max(24px, env(safe-area-inset-right, 0px))
+      max(24px, env(safe-area-inset-bottom, 0px))
+      max(24px, env(safe-area-inset-left, 0px));
   }
 
   .menu-modal__dialog {
