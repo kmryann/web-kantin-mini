@@ -42,7 +42,7 @@ var MENU_DATA = [
     id: 5,
     nama: "Ayam Geprek",
     kategori: "Paket Nasi",
-    harga: 18000,
+    harga: 19000,
     deskripsi: "Ayam crispy digeprek sambal bawang",
     foto: "img/foto-menu/ayam-geprek.webp",
   },
@@ -50,7 +50,7 @@ var MENU_DATA = [
     id: 6,
     nama: "Ayam Bakar",
     kategori: "Paket Nasi",
-    harga: 18000,
+    harga: 19000,
     deskripsi: "Ayam bakar bumbu manis gurih + tahu tempe",
     foto: "img/foto-menu/ayam-kecap.webp",
   },
@@ -58,7 +58,7 @@ var MENU_DATA = [
     id: 7,
     nama: "Ayam Penyet",
     kategori: "Paket Nasi",
-    harga: 18000,
+    harga: 19000,
     deskripsi: "Ayam goreng penyet sambal pedas + tahu tempe",
     foto: "img/foto-menu/ayam-penyet.webp",
   },
@@ -66,7 +66,7 @@ var MENU_DATA = [
     id: 8,
     nama: "Ayam Kalasan",
     kategori: "Paket Nasi",
-    harga: 18000,
+    harga: 19000,
     deskripsi: "Ayam goreng bumbu kalasan + tahu tempe",
     foto: "img/foto-menu/ayam-kalasan.webp",
   },
@@ -74,18 +74,18 @@ var MENU_DATA = [
     id: 9,
     nama: "Ayam Kremes",
     kategori: "Paket Nasi",
-    harga: 18000,
+    harga: 19000,
     deskripsi: "Ayam goreng renyah dengan kremesan gurih + tahu tempe",
     foto: "img/foto-menu/ayam-kremes.webp",
   },
-  {
-    id: 10,
-    nama: "Ayam Tulang Lunak",
-    kategori: "Paket Nasi",
-    harga: 18000,
-    deskripsi: "Ayam goreng tulang lunak renyah dan gurih + tahu tempe",
-    foto: "img/foto-menu/ayam-tulanglunak.webp",
-  },
+  // {
+  //   id: 10,
+  //   nama: "Ayam Tulang Lunak",
+  //   kategori: "Paket Nasi",
+  //   harga: 18000,
+  //   deskripsi: "Ayam goreng tulang lunak renyah dan gurih + tahu tempe",
+  //   foto: "img/foto-menu/ayam-tulanglunak.webp",
+  // },
   {
     id: 11,
     nama: "Ayam Pedas Daun Jeruk",
@@ -122,7 +122,7 @@ var MENU_DATA = [
     id: 15,
     nama: "Sapi Lada Hitam",
     kategori: "Paket Nasi",
-    harga: 18000,
+    harga: 19000,
     deskripsi: "Daging sapi empuk saus lada hitam",
     foto: "img/foto-menu/sapi-ladahitam.webp",
   },
@@ -333,6 +333,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!root || typeof root.querySelectorAll !== "function") return [];
     return Array.from(root.querySelectorAll(sel));
   }
+
+  document.addEventListener(
+    "animationend",
+    function (e) {
+      var t = e.target;
+      if (!t || !t.classList) return;
+      if (t.classList.contains("menu-card__add") && t.classList.contains("is-bump")) {
+        t.classList.remove("is-bump");
+      }
+    },
+    { passive: true },
+  );
   function formatRupiah(num) {
     return "Rp " + Number(num).toLocaleString("id-ID");
   }
@@ -381,6 +393,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var menuModal = qs("#menuModal");
   var lastFocusedEl = null;
+  var currentModalItem = null;
+  var modalAddToCartBtn = qs("#menuModalAddToCart");
 
   function closeMenuModal() {
     if (!menuModal || !menuModal.classList.contains("is-open")) return;
@@ -404,6 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function openMenuModal(item) {
     if (!menuModal) return;
+    currentModalItem = item;
     lastFocusedEl = document.activeElement;
     var imgEl = qs("#menuModalImg", menuModal);
     var catEl = qs("#menuModalCat", menuModal);
@@ -411,7 +426,6 @@ document.addEventListener("DOMContentLoaded", function () {
     var titleEl = qs("#menuModalTitle", menuModal);
     var priceEl = qs("#menuModalPrice", menuModal);
     var descEl = qs("#menuModalDesc", menuModal);
-    var waEl = qs("#menuModalWa", menuModal);
     if (imgEl) {
       imgEl.src = item.foto;
       imgEl.alt = item.nama;
@@ -429,22 +443,520 @@ document.addEventListener("DOMContentLoaded", function () {
     if (titleEl) titleEl.textContent = item.nama;
     if (priceEl) priceEl.textContent = formatRupiah(item.harga);
     if (descEl) descEl.textContent = item.deskripsi;
-    if (waEl) {
-      var msg = encodeURIComponent(
-        "Halo Kantin Mini, saya ingin pesan: " +
-          item.nama +
-          " (" +
-          formatRupiah(item.harga) +
-          ")",
-      );
-      waEl.href = "https://wa.me/6285117693117?text=" + msg;
-    }
     menuModal.removeAttribute("hidden");
     menuModal.setAttribute("aria-hidden", "false");
     menuModal.classList.add("is-open");
     document.body.classList.add("modal-open");
     var closeBtn = qs("#menuModalClose", menuModal);
     if (closeBtn) closeBtn.focus();
+  }
+
+  /* ============================================================
+     1b. CART (RINGAN) — simpan multi item + checkout via WhatsApp
+     ============================================================ */
+  var CART_STORAGE_KEY = "kantinmini_cart_v1";
+  var CART_NAME_KEY = "kantinmini_cart_name_v1";
+  var CART_ORDER_TYPE_KEY = "kantinmini_cart_order_type_v1";
+  var CART_PICKUP_TIME_KEY = "kantinmini_cart_pickup_time_v1";
+  var cartFab = qs("#cartFab");
+  var cartFabCount = qs("#cartFabCount");
+  var cartNavBtn = qs("#cartNavBtn");
+  var cartNavCount = qs("#cartNavCount");
+  var cartDrawer = qs("#cartDrawer");
+  var cartDrawerBody = qs("#cartDrawerBody");
+  var cartDrawerTotal = qs("#cartDrawerTotal");
+  var cartDrawerClose = qs("#cartDrawerClose");
+  var cartClearBtn = qs("#cartClear");
+  var cartCheckout = qs("#cartCheckout");
+  var cartNameInput = qs("#cartName");
+  var cartPickupWrap = qs("#cartPickupWrap");
+  var cartPickupInput = qs("#cartPickupTime");
+  var cartPanel = cartDrawer ? qs(".cart-drawer__panel", cartDrawer) : null;
+  var lastFocusedBeforeCart = null;
+
+  var cart = [];
+  var cartName = "";
+  var cartOrderType = "dinein";
+  var cartPickupTime = "";
+
+  function haptic(ms) {
+    try {
+      if (!navigator.vibrate) return;
+      navigator.vibrate(typeof ms === "number" ? ms : 10);
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  function loadOrderType() {
+    try {
+      var raw = window.localStorage.getItem(CART_ORDER_TYPE_KEY);
+      if (raw === "dinein" || raw === "takeaway") return raw;
+      return "dinein";
+    } catch (_) {
+      return "dinein";
+    }
+  }
+
+  function saveOrderType() {
+    try {
+      window.localStorage.setItem(CART_ORDER_TYPE_KEY, cartOrderType);
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  function loadPickupTime() {
+    try {
+      var raw = window.localStorage.getItem(CART_PICKUP_TIME_KEY);
+      if (!raw) return "";
+      return String(raw).slice(0, 10);
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function savePickupTime() {
+    try {
+      window.localStorage.setItem(CART_PICKUP_TIME_KEY, cartPickupTime);
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  function syncPickupUI() {
+    if (!cartPickupWrap) return;
+    var show = cartOrderType === "takeaway";
+    cartPickupWrap.hidden = !show;
+    if (!show) return;
+    if (cartPickupInput) cartPickupInput.value = cartPickupTime || "";
+  }
+
+  function loadCartName() {
+    try {
+      var raw = window.localStorage.getItem(CART_NAME_KEY);
+      if (!raw) return "";
+      return String(raw).slice(0, 80);
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function saveCartName() {
+    try {
+      window.localStorage.setItem(CART_NAME_KEY, cartName);
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  function loadCart() {
+    try {
+      var raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter(function (x) {
+          return (
+            x &&
+            typeof x.id === "number" &&
+            typeof x.qty === "number" &&
+            x.qty > 0
+          );
+        })
+        .map(function (x) {
+          return { id: x.id, qty: Math.floor(x.qty) };
+        });
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveCart() {
+    try {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  function cartCount() {
+    return cart.reduce(function (sum, x) {
+      return sum + (x.qty || 0);
+    }, 0);
+  }
+
+  function findMenuById(id) {
+    for (var i = 0; i < MENU_DATA.length; i++) {
+      if (MENU_DATA[i].id === id) return MENU_DATA[i];
+    }
+    return null;
+  }
+
+  function cartTotal() {
+    return cart.reduce(function (sum, x) {
+      var item = findMenuById(x.id);
+      if (!item) return sum;
+      return sum + item.harga * x.qty;
+    }, 0);
+  }
+
+  function setCartBadges() {
+    var c = String(cartCount());
+    if (cartFabCount) {
+      cartFabCount.textContent = c;
+      bumpClickAnim(cartFabCount, "is-badge-bump");
+    }
+    if (cartNavCount) {
+      cartNavCount.textContent = c;
+      bumpClickAnim(cartNavCount, "is-badge-bump");
+    }
+  }
+
+  function openCartDrawer() {
+    if (!cartDrawer) return;
+    lastFocusedBeforeCart = document.activeElement;
+    cartDrawer.removeAttribute("hidden");
+    cartDrawer.setAttribute("aria-hidden", "false");
+    // Prevent focusing inside when closed (supported in modern browsers)
+    if (typeof cartDrawer.inert !== "undefined") cartDrawer.inert = false;
+    cartDrawer.classList.add("is-open");
+    document.body.classList.add("cart-open");
+    renderCart();
+    if (cartDrawerClose && typeof cartDrawerClose.focus === "function") {
+      cartDrawerClose.focus();
+    }
+  }
+
+  function closeCartDrawer() {
+    if (!cartDrawer) return;
+    // Important A11Y: jangan hide drawer saat fokus masih di dalamnya.
+    var activeEl = document.activeElement;
+    if (activeEl && cartDrawer.contains(activeEl)) {
+      if (lastFocusedBeforeCart && typeof lastFocusedBeforeCart.focus === "function") {
+        lastFocusedBeforeCart.focus();
+      } else if (cartNavBtn && typeof cartNavBtn.focus === "function") {
+        cartNavBtn.focus();
+      } else if (cartFab && typeof cartFab.focus === "function") {
+        cartFab.focus();
+      } else if (typeof activeEl.blur === "function") {
+        activeEl.blur();
+      }
+    }
+    cartDrawer.classList.remove("is-open");
+    cartDrawer.setAttribute("aria-hidden", "true");
+    cartDrawer.setAttribute("hidden", "");
+    if (typeof cartDrawer.inert !== "undefined") cartDrawer.inert = true;
+    document.body.classList.remove("cart-open");
+  }
+
+  function initCartSwipeToClose() {
+    if (!cartPanel) return;
+    var startX = 0;
+    var currentX = 0;
+    var dragging = false;
+    var panelW = 0;
+
+    function setTranslate(px) {
+      cartPanel.style.transform = "translateX(" + px + "px)";
+    }
+
+    cartPanel.addEventListener("pointerdown", function (e) {
+      if (!cartDrawer || !cartDrawer.classList.contains("is-open")) return;
+      if (e.pointerType === "mouse") return; // swipe only for touch/pen
+      dragging = true;
+      startX = e.clientX;
+      currentX = 0;
+      panelW = cartPanel.getBoundingClientRect().width || 1;
+      cartPanel.classList.add("is-dragging");
+      try {
+        cartPanel.setPointerCapture(e.pointerId);
+      } catch (_) {
+        // ignore
+      }
+    });
+
+    cartPanel.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - startX;
+      // drawer ada di kanan → geser ke kanan untuk tutup
+      currentX = Math.max(0, dx);
+      setTranslate(currentX);
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      cartPanel.classList.remove("is-dragging");
+      cartPanel.style.transform = "";
+      if (currentX > panelW * 0.35) {
+        closeCartDrawer();
+        haptic(10);
+      }
+      currentX = 0;
+    }
+
+    cartPanel.addEventListener("pointerup", endDrag);
+    cartPanel.addEventListener("pointercancel", endDrag);
+  }
+
+  function addToCart(menuItem, qty) {
+    if (!menuItem) return;
+    var addQty = qty && qty > 0 ? qty : 1;
+    var existing = cart.find(function (x) {
+      return x.id === menuItem.id;
+    });
+    if (existing) {
+      existing.qty = Math.min(99, existing.qty + addQty);
+    } else {
+      cart.push({ id: menuItem.id, qty: Math.min(99, addQty) });
+    }
+    saveCart();
+    setCartBadges();
+    renderCart();
+    haptic(10);
+  }
+
+  /* Toast kecil */
+  var toastEl = null;
+  var toastTimer = null;
+
+  function showToast(text, opts) {
+    if (!text) return;
+    var options = opts || {};
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "toast";
+      toastEl.setAttribute("role", "status");
+      toastEl.setAttribute("aria-live", "polite");
+      document.body.appendChild(toastEl);
+    }
+    toastEl.innerHTML = "";
+    var msg = document.createElement("span");
+    msg.className = "toast__text";
+    msg.textContent = text;
+    toastEl.appendChild(msg);
+
+    if (options && options.actionText && typeof options.onAction === "function") {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "toast__action";
+      btn.textContent = options.actionText;
+      btn.addEventListener("click", function () {
+        try {
+          options.onAction();
+        } finally {
+          toastEl.classList.remove("is-show");
+        }
+      });
+      toastEl.appendChild(btn);
+    }
+    toastEl.classList.add("is-show");
+    if (toastTimer) window.clearTimeout(toastTimer);
+    var reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    toastTimer = window.setTimeout(
+      function () {
+        if (!toastEl) return;
+        toastEl.classList.remove("is-show");
+      },
+      reduceMotion ? 1100 : 1700,
+    );
+  }
+
+  function bumpClickAnim(el, className) {
+    if (!el) return;
+    var reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduceMotion) return;
+    var cn = className || "is-bump";
+    el.classList.remove(cn);
+    // Force reflow supaya animasi bisa diputar ulang setiap klik.
+    void el.offsetWidth;
+    el.classList.add(cn);
+  }
+
+  function setQty(id, qty) {
+    var q = Math.floor(qty);
+    if (q <= 0) {
+      cart = cart.filter(function (x) {
+        return x.id !== id;
+      });
+    } else {
+      cart.forEach(function (x) {
+        if (x.id === id) x.qty = Math.min(99, q);
+      });
+    }
+    saveCart();
+    setCartBadges();
+    renderCart();
+  }
+
+  function clearCart() {
+    cart = [];
+    saveCart();
+    setCartBadges();
+    renderCart();
+  }
+
+  function buildCheckoutLink() {
+    if (!cartCheckout) return;
+    if (cart.length === 0) {
+      cartCheckout.href = "#";
+      cartCheckout.setAttribute("aria-disabled", "true");
+      cartCheckout.style.pointerEvents = "none";
+      cartCheckout.style.opacity = "0.65";
+      return;
+    }
+
+    cartCheckout.removeAttribute("aria-disabled");
+    cartCheckout.style.pointerEvents = "";
+    cartCheckout.style.opacity = "";
+
+    var lines = [];
+    lines.push("Halo Kantin Mini, saya ingin pesan.");
+    lines.push(
+      "Jenis: " + (cartOrderType === "takeaway" ? "Take Away" : "Dine-In"),
+    );
+    if (cartName && cartName.trim()) {
+      lines.push("Atas nama: " + cartName.trim());
+    }
+    if (cartOrderType === "takeaway" && cartPickupTime && cartPickupTime.trim()) {
+      lines.push("Jam ambil: " + cartPickupTime.trim());
+    }
+    lines.push("");
+
+    lines.push("Pesanan:");
+    var idx = 1;
+    cart.forEach(function (x) {
+      var item = findMenuById(x.id);
+      if (!item) return;
+      var subtotal = item.harga * x.qty;
+      lines.push(
+        idx++ +
+          ") " +
+          item.nama +
+          " — " +
+          x.qty +
+          " x " +
+          formatRupiah(item.harga) +
+          " = " +
+          formatRupiah(subtotal),
+      );
+    });
+    lines.push("");
+    lines.push("Total: " + formatRupiah(cartTotal()));
+    // lines.push("");
+    // lines.push("Catatan: (opsional) alamat (jika delivery), patokan, dll.");
+
+    var msg = encodeURIComponent(lines.join("\n"));
+    cartCheckout.href = "https://wa.me/6285117693117?text=" + msg;
+  }
+
+  function renderCart() {
+    if (!cartDrawerBody || !cartDrawerTotal) return;
+
+    cartDrawerBody.innerHTML = "";
+    var total = cartTotal();
+    cartDrawerTotal.textContent = formatRupiah(total);
+    buildCheckoutLink();
+
+    if (cart.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "cart-empty";
+      var msg = document.createElement("div");
+      msg.textContent = "Keranjang masih kosong.";
+      empty.appendChild(msg);
+
+      var actions = document.createElement("div");
+      actions.className = "cart-empty__actions";
+      var go = document.createElement("button");
+      go.type = "button";
+      go.className = "btn btn--primary";
+      go.textContent = "Lihat Menu";
+      go.addEventListener("click", function () {
+        closeCartDrawer();
+        var target = document.getElementById("menu");
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      actions.appendChild(go);
+      empty.appendChild(actions);
+      cartDrawerBody.appendChild(empty);
+      return;
+    }
+
+    cart.forEach(function (x) {
+      var item = findMenuById(x.id);
+      if (!item) return;
+
+      var row = document.createElement("div");
+      row.className = "cart-item";
+
+      var imgWrap = document.createElement("div");
+      imgWrap.className = "cart-item__img";
+      var img = document.createElement("img");
+      img.src = item.foto;
+      img.alt = item.nama;
+      img.loading = "lazy";
+      img.onerror = function () {
+        this.src =
+          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop";
+      };
+      imgWrap.appendChild(img);
+
+      var info = document.createElement("div");
+      var name = document.createElement("div");
+      name.className = "cart-item__name";
+      name.textContent = item.nama;
+      var meta = document.createElement("div");
+      meta.className = "cart-item__meta";
+      meta.textContent = formatRupiah(item.harga);
+
+      var bottom = document.createElement("div");
+      bottom.className = "cart-item__row";
+
+      var qty = document.createElement("div");
+      qty.className = "cart-qty";
+      var minus = document.createElement("button");
+      minus.type = "button";
+      minus.textContent = "−";
+      minus.addEventListener("click", function () {
+        setQty(item.id, x.qty - 1);
+      });
+      var num = document.createElement("span");
+      num.textContent = String(x.qty);
+      var plus = document.createElement("button");
+      plus.type = "button";
+      plus.textContent = "+";
+      plus.addEventListener("click", function () {
+        setQty(item.id, x.qty + 1);
+      });
+      qty.appendChild(minus);
+      qty.appendChild(num);
+      qty.appendChild(plus);
+
+      var remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "cart-remove";
+      remove.textContent = "Hapus";
+      remove.addEventListener("click", function () {
+        setQty(item.id, 0);
+      });
+
+      bottom.appendChild(qty);
+      bottom.appendChild(remove);
+
+      info.appendChild(name);
+      info.appendChild(meta);
+      info.appendChild(bottom);
+
+      row.appendChild(imgWrap);
+      row.appendChild(info);
+      cartDrawerBody.appendChild(row);
+    });
   }
 
   if (menuModal) {
@@ -455,10 +967,25 @@ document.addEventListener("DOMContentLoaded", function () {
     if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeMenuModal);
   }
 
+  if (modalAddToCartBtn) {
+    modalAddToCartBtn.addEventListener("click", function () {
+      if (!currentModalItem) return;
+      addToCart(currentModalItem, 1);
+      showToast(currentModalItem.nama + " ditambahkan", {
+        actionText: "Lihat keranjang",
+        onAction: openCartDrawer,
+      });
+    });
+  }
+
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
     if (menuModal && menuModal.classList.contains("is-open")) {
       closeMenuModal();
+      return;
+    }
+    if (cartDrawer && cartDrawer.classList.contains("is-open")) {
+      closeCartDrawer();
       return;
     }
     if (hamburger) hamburger.classList.remove("open");
@@ -728,6 +1255,22 @@ document.addEventListener("DOMContentLoaded", function () {
     // badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/\s+/g, "-"));
     badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
 
+    var addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "menu-card__add";
+    addBtn.setAttribute("aria-label", "Tambah ke keranjang: " + item.nama);
+    addBtn.textContent = "+";
+    addBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      bumpClickAnim(addBtn, "is-bump");
+      addToCart(item, 1);
+      showToast(item.nama + " ditambahkan", {
+        actionText: "Lihat keranjang",
+        onAction: openCartDrawer,
+      });
+    });
+
     var isBestSeller = bestSellerIds && bestSellerIds.indexOf(item.id) !== -1;
     if (isBestSeller) {
       var best = document.createElement("span");
@@ -758,6 +1301,7 @@ document.addEventListener("DOMContentLoaded", function () {
     price.textContent = formatRupiah(item.harga);
 
     footer.appendChild(price);
+    footer.appendChild(addBtn);
     body.appendChild(name);
     body.appendChild(desc);
     body.appendChild(footer);
@@ -850,6 +1394,54 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* --- Eksekusi Akhir --- */
+  cart = loadCart();
+  cartName = loadCartName();
+  cartOrderType = loadOrderType();
+  cartPickupTime = loadPickupTime();
+  qsa('input[name="cartOrderType"]').forEach(function (el) {
+    el.checked = el.value === cartOrderType;
+    el.addEventListener("change", function () {
+      if (!el.checked) return;
+      if (el.value === "dinein" || el.value === "takeaway") {
+        cartOrderType = el.value;
+        saveOrderType();
+        buildCheckoutLink();
+        syncPickupUI();
+      }
+    });
+  });
+  syncPickupUI();
+  if (cartPickupInput) {
+    cartPickupInput.value = cartPickupTime;
+    cartPickupInput.addEventListener("input", function () {
+      cartPickupTime = (cartPickupInput.value || "").slice(0, 10);
+      savePickupTime();
+      buildCheckoutLink();
+    });
+  }
+  if (cartNameInput) {
+    cartNameInput.value = cartName;
+    cartNameInput.addEventListener("input", function () {
+      cartName = (cartNameInput.value || "").slice(0, 80);
+      saveCartName();
+      buildCheckoutLink();
+    });
+  }
+  setCartBadges();
+  buildCheckoutLink();
+
+  if (cartFab) cartFab.addEventListener("click", openCartDrawer);
+  if (cartNavBtn) cartNavBtn.addEventListener("click", openCartDrawer);
+  if (cartDrawerClose) cartDrawerClose.addEventListener("click", closeCartDrawer);
+  if (cartDrawer) {
+    cartDrawer.addEventListener("click", function (e) {
+      if (e.target && e.target.closest("[data-cart-close]")) closeCartDrawer();
+    });
+  }
+  if (cartClearBtn) cartClearBtn.addEventListener("click", clearCart);
+  initCartSwipeToClose();
+  if (cartDrawer && typeof cartDrawer.inert !== "undefined") cartDrawer.inert = true;
+
   loadMenu();
   initAboutCarousel();
   initReveal();

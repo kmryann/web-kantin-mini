@@ -34,6 +34,30 @@
           <a href="#contact" class="nav-link">Kontak</a>
         </nav>
         <button
+          type="button"
+          class="navbar__cart"
+          id="cartNavBtn"
+          aria-label="Buka keranjang"
+          aria-haspopup="dialog"
+          aria-controls="cartDrawer"
+        >
+          <span class="navbar__cart-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 16 16" focusable="false">
+              <path
+                fill="currentColor"
+                d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 2H.5a.5.5 0 0 1-.5-.5ZM4.415 11h8.17l1.312-7H3.102l1.313 7Z"
+              />
+              <path
+                fill="currentColor"
+                d="M5.5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"
+              />
+            </svg>
+          </span>
+          <span class="navbar__cart-count" id="cartNavCount" aria-label="Jumlah item"
+            >0</span
+          >
+        </button>
+        <button
           class="navbar__hamburger"
           id="hamburger"
           aria-label="Buka menu navigasi"
@@ -661,16 +685,122 @@
           <h3 class="menu-modal__title" id="menuModalTitle"></h3>
           <p class="menu-modal__price" id="menuModalPrice"></p>
           <p class="menu-modal__desc" id="menuModalDesc"></p>
-          <a
-            class="menu-modal__wa"
-            id="menuModalWa"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Pesan via WhatsApp</a
+          <button
+            type="button"
+            class="btn btn--primary"
+            id="menuModalAddToCart"
           >
+            Tambah ke Keranjang
+          </button>
         </div>
       </div>
+    </div>
+
+    <!-- ===== CART (RINGAN) ===== -->
+    <button
+      type="button"
+      class="cart-fab"
+      id="cartFab"
+      aria-label="Buka keranjang"
+      aria-haspopup="dialog"
+      aria-controls="cartDrawer"
+    >
+      <span class="cart-fab__icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 16 16" focusable="false">
+          <path
+            fill="currentColor"
+            d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 2H.5a.5.5 0 0 1-.5-.5ZM4.415 11h8.17l1.312-7H3.102l1.313 7Z"
+          />
+          <path
+            fill="currentColor"
+            d="M5.5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm6 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"
+          />
+        </svg>
+      </span>
+      <span class="cart-fab__count" id="cartFabCount" aria-label="Jumlah item"
+        >0</span
+      >
+    </button>
+
+    <div class="cart-drawer" id="cartDrawer" hidden aria-hidden="true">
+      <div class="cart-drawer__backdrop" data-cart-close tabindex="-1"></div>
+      <aside class="cart-drawer__panel" role="dialog" aria-modal="true">
+        <header class="cart-drawer__header">
+          <div>
+            <h3>Keranjang</h3>
+            <p class="cart-drawer__sub" id="cartDrawerSub">
+              Pilih menu, atur jumlah, lalu pesan via WhatsApp.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="cart-drawer__close"
+            id="cartDrawerClose"
+            aria-label="Tutup keranjang"
+          >
+            ✕
+          </button>
+        </header>
+
+        <div class="cart-drawer__body" id="cartDrawerBody">
+          <!-- Rendered by JS -->
+        </div>
+
+        <footer class="cart-drawer__footer">
+          <div class="cart-drawer__field">
+            <span class="cart-drawer__label">Jenis pesanan</span>
+            <div class="cart-drawer__seg" role="radiogroup" aria-label="Jenis pesanan">
+              <label class="cart-drawer__seg-item">
+                <input type="radio" name="cartOrderType" value="dinein" checked />
+                <span>Dine-In</span>
+              </label>
+              <label class="cart-drawer__seg-item">
+                <input type="radio" name="cartOrderType" value="takeaway" />
+                <span>Take Away</span>
+              </label>
+            </div>
+          </div>
+          <div class="cart-drawer__field">
+            <label for="cartName" class="cart-drawer__label">Atas nama</label>
+            <input
+              id="cartName"
+              class="cart-drawer__input"
+              type="text"
+              inputmode="text"
+              autocomplete="name"
+              placeholder="Tulis nama Anda…"
+            />
+          </div>
+          <div class="cart-drawer__field" id="cartPickupWrap" hidden>
+            <label for="cartPickupTime" class="cart-drawer__label"
+              >Jam ambil</label
+            >
+            <input
+              id="cartPickupTime"
+              class="cart-drawer__input"
+              type="time"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="cart-drawer__total">
+            <span>Total</span>
+            <strong id="cartDrawerTotal">Rp 0</strong>
+          </div>
+          <div class="cart-drawer__actions">
+            <button type="button" class="btn cart-clear" id="cartClear">
+              Kosongkan
+            </button>
+            <a
+              class="btn btn-whatsapp cart-checkout"
+              id="cartCheckout"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Pesan via WhatsApp</a
+            >
+          </div>
+        </footer>
+      </aside>
     </div>
 
     <script src="script.js"></script>
