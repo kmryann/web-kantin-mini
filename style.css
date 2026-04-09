@@ -2246,8 +2246,9 @@ body.modal-open {
   width: min(420px, 92vw);
   background: var(--white);
   box-shadow: -18px 0 48px rgba(0, 0, 0, 0.22);
-  display: flex;
-  flex-direction: column;
+  /* Scroll satu area penuh (lebih nyaman daripada scroll kecil di list) */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   will-change: transform;
@@ -2271,6 +2272,11 @@ body.modal-open {
   align-items: flex-start;
   gap: 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
 }
 
 .cart-drawer__header h3 {
@@ -2304,9 +2310,7 @@ body.modal-open {
 
 .cart-drawer__body {
   padding: 14px 18px 18px;
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
+  overflow: visible;
   position: relative;
   z-index: 1;
 }
@@ -2416,8 +2420,9 @@ body.modal-open {
     rgba(250, 249, 247, 0.9),
     rgba(255, 255, 255, 0.95)
   );
-  position: relative;
-  z-index: 2;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
 }
 
 .cart-drawer__field {
