@@ -719,6 +719,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* Toast kecil */
+  var TOAST_MSG_CART_ADDED = "Berhasil ditambahkan";
   var toastEl = null;
   var toastTimer = null;
 
@@ -971,7 +972,7 @@ document.addEventListener("DOMContentLoaded", function () {
     modalAddToCartBtn.addEventListener("click", function () {
       if (!currentModalItem) return;
       addToCart(currentModalItem, 1);
-      showToast(currentModalItem.nama + " ditambahkan", {
+      showToast(TOAST_MSG_CART_ADDED, {
         actionText: "Lihat keranjang",
         onAction: openCartDrawer,
       });
@@ -1265,7 +1266,7 @@ document.addEventListener("DOMContentLoaded", function () {
       e.stopPropagation();
       bumpClickAnim(addBtn, "is-bump");
       addToCart(item, 1);
-      showToast(item.nama + " ditambahkan", {
+      showToast(TOAST_MSG_CART_ADDED, {
         actionText: "Lihat keranjang",
         onAction: openCartDrawer,
       });
