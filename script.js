@@ -471,7 +471,6 @@ document.addEventListener("DOMContentLoaded", function () {
   var cartNameInput = qs("#cartName");
   var cartPickupWrap = qs("#cartPickupWrap");
   var cartPickupInput = qs("#cartPickupTime");
-  var cartPanel = cartDrawer ? qs(".cart-drawer__panel", cartDrawer) : null;
   var lastFocusedBeforeCart = null;
 
   var cart = [];
@@ -649,56 +648,6 @@ document.addEventListener("DOMContentLoaded", function () {
     cartDrawer.setAttribute("hidden", "");
     if (typeof cartDrawer.inert !== "undefined") cartDrawer.inert = true;
     document.body.classList.remove("cart-open");
-  }
-
-  function initCartSwipeToClose() {
-    if (!cartPanel) return;
-    var startX = 0;
-    var currentX = 0;
-    var dragging = false;
-    var panelW = 0;
-
-    function setTranslate(px) {
-      cartPanel.style.transform = "translateX(" + px + "px)";
-    }
-
-    cartPanel.addEventListener("pointerdown", function (e) {
-      if (!cartDrawer || !cartDrawer.classList.contains("is-open")) return;
-      if (e.pointerType === "mouse") return; // swipe only for touch/pen
-      dragging = true;
-      startX = e.clientX;
-      currentX = 0;
-      panelW = cartPanel.getBoundingClientRect().width || 1;
-      cartPanel.classList.add("is-dragging");
-      try {
-        cartPanel.setPointerCapture(e.pointerId);
-      } catch (_) {
-        // ignore
-      }
-    });
-
-    cartPanel.addEventListener("pointermove", function (e) {
-      if (!dragging) return;
-      var dx = e.clientX - startX;
-      // drawer ada di kanan → geser ke kanan untuk tutup
-      currentX = Math.max(0, dx);
-      setTranslate(currentX);
-    });
-
-    function endDrag() {
-      if (!dragging) return;
-      dragging = false;
-      cartPanel.classList.remove("is-dragging");
-      cartPanel.style.transform = "";
-      if (currentX > panelW * 0.35) {
-        closeCartDrawer();
-        haptic(10);
-      }
-      currentX = 0;
-    }
-
-    cartPanel.addEventListener("pointerup", endDrag);
-    cartPanel.addEventListener("pointercancel", endDrag);
   }
 
   function addToCart(menuItem, qty) {
@@ -1440,7 +1389,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   if (cartClearBtn) cartClearBtn.addEventListener("click", clearCart);
-  initCartSwipeToClose();
   if (cartDrawer && typeof cartDrawer.inert !== "undefined") cartDrawer.inert = true;
 
   loadMenu();
