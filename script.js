@@ -10,7 +10,7 @@ var MENU_DATA = [
     nama: "Chicken Katsu",
     kategori: "Paket Nasi",
     harga: 16000,
-    deskripsi: "Nasi + chicken katsu — pilih saus di detail.",
+    // deskripsi: "Nasi + chicken katsu — pilih saus di detail.",
     /** Opsi untuk baris keranjang & WA (harga sama). */
     pilihanSaus: ["BBQ", "Lada Hitam", "Lava", "Sambal Geprek"],
     foto: "img/foto-menu/katsu-bbq.webp",
@@ -165,7 +165,7 @@ var MENU_DATA = [
     nama: "Kentang Katsu",
     kategori: "Light Bites",
     harga: 17000,
-    deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava",
+    // deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava",
     pilihanSaus: ["BBQ", "Lada Hitam", "Lava", "Sambal Geprek"],
     foto: "img/foto-menu/kentang-katsu.webp",
   },
