@@ -10,7 +10,9 @@ var MENU_DATA = [
     nama: "Chicken Katsu",
     kategori: "Paket Nasi",
     harga: 16000,
-    deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava/Sambal Geprek",
+    deskripsi: "Nasi + chicken katsu — pilih saus di detail.",
+    /** Opsi untuk baris keranjang & WA (harga sama). */
+    pilihanSaus: ["BBQ", "Lada Hitam", "Lava", "Sambal Geprek"],
     foto: "img/foto-menu/katsu-bbq.webp",
     // bestSeller: true,
   },
@@ -164,6 +166,7 @@ var MENU_DATA = [
     kategori: "Light Bites",
     harga: 17000,
     deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava",
+    pilihanSaus: ["BBQ", "Lada Hitam", "Lava", "Sambal Geprek"],
     foto: "img/foto-menu/kentang-katsu.webp",
   },
   {
@@ -392,12 +395,26 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   var menuModal = qs("#menuModal");
+  var menuModalSausWrap = menuModal ? qs("#menuModalSausWrap", menuModal) : null;
+  var menuModalSausSeg = menuModal ? qs("#menuModalSausSeg", menuModal) : null;
   var lastFocusedEl = null;
   var currentModalItem = null;
   var modalAddToCartBtn = qs("#menuModalAddToCart");
+  /** Entri history dari pushState saat overlay terbuka (untuk tombol Back browser). */
+  var kmModalPushed = false;
+  var kmCartPushed = false;
 
-  function closeMenuModal() {
+  function closeMenuModal(fromPopState) {
     if (!menuModal || !menuModal.classList.contains("is-open")) return;
+    if (!fromPopState) {
+      if (kmModalPushed) {
+        history.back();
+      } else {
+        closeMenuModal(true);
+      }
+      return;
+    }
+    kmModalPushed = false;
     menuModal.classList.remove("is-open");
     var bestEl = qs("#menuModalBest", menuModal);
     if (bestEl) bestEl.hidden = true;
@@ -418,6 +435,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function openMenuModal(item) {
     if (!menuModal) return;
+    var wasOpen = menuModal.classList.contains("is-open");
     currentModalItem = item;
     lastFocusedEl = document.activeElement;
     var imgEl = qs("#menuModalImg", menuModal);
@@ -443,12 +461,43 @@ document.addEventListener("DOMContentLoaded", function () {
     if (titleEl) titleEl.textContent = item.nama;
     if (priceEl) priceEl.textContent = formatRupiah(item.harga);
     if (descEl) descEl.textContent = item.deskripsi;
+    if (menuModalSausWrap && menuModalSausSeg) {
+      if (item.pilihanSaus && item.pilihanSaus.length) {
+        menuModalSausWrap.hidden = false;
+        menuModalSausSeg.innerHTML = "";
+        item.pilihanSaus.forEach(function (label, i) {
+          var lab = document.createElement("label");
+          lab.className = "menu-modal__seg-item";
+          var inp = document.createElement("input");
+          inp.type = "radio";
+          inp.name = "menuModalSaus";
+          inp.value = label;
+          if (i === 0) inp.checked = true;
+          var sp = document.createElement("span");
+          sp.textContent = label;
+          lab.appendChild(inp);
+          lab.appendChild(sp);
+          menuModalSausSeg.appendChild(lab);
+        });
+      } else {
+        menuModalSausWrap.hidden = true;
+        menuModalSausSeg.innerHTML = "";
+      }
+    }
     menuModal.removeAttribute("hidden");
     menuModal.setAttribute("aria-hidden", "false");
     menuModal.classList.add("is-open");
     document.body.classList.add("modal-open");
     var closeBtn = qs("#menuModalClose", menuModal);
     if (closeBtn) closeBtn.focus();
+    if (!wasOpen) {
+      try {
+        history.pushState({ kmOverlay: "modal" }, "", window.location.href);
+        kmModalPushed = true;
+      } catch (_) {
+        kmModalPushed = false;
+      }
+    }
   }
 
   /* ============================================================
@@ -565,7 +614,17 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         })
         .map(function (x) {
-          return { id: x.id, qty: Math.floor(x.qty) };
+          var line = { id: x.id, qty: Math.floor(x.qty) };
+          if (x.saus && typeof x.saus === "string") {
+            line.saus = String(x.saus).slice(0, 40);
+          }
+          var m = findMenuById(line.id);
+          if (m && m.pilihanSaus && m.pilihanSaus.length) {
+            var valid =
+              line.saus && m.pilihanSaus.indexOf(line.saus) !== -1;
+            if (!valid) line.saus = m.pilihanSaus[0];
+          }
+          return line;
         });
     } catch (_) {
       return [];
@@ -593,6 +652,19 @@ document.addEventListener("DOMContentLoaded", function () {
     return null;
   }
 
+  function cartLineSaus(x) {
+    return x && x.saus ? String(x.saus) : "";
+  }
+
+  function cartLinesMatchForMerge(a, b) {
+    return a.id === b.id && cartLineSaus(a) === cartLineSaus(b);
+  }
+
+  function cartLineMatchesIdSaus(x, id, saus) {
+    var s = saus != null ? String(saus) : "";
+    return x.id === id && cartLineSaus(x) === s;
+  }
+
   function cartTotal() {
     return cart.reduce(function (sum, x) {
       var item = findMenuById(x.id);
@@ -615,7 +687,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function openCartDrawer() {
     if (!cartDrawer) return;
-    lastFocusedBeforeCart = document.activeElement;
+    hideToast();
+    var wasCartOpen = cartDrawer.classList.contains("is-open");
+    var modalWasOpen = menuModal && menuModal.classList.contains("is-open");
+
+    /* Dari toast "Lihat keranjang": tutup modal + satu entri history = cart (bukan modal lalu cart). */
+    if (modalWasOpen && !wasCartOpen) {
+      closeMenuModal(true);
+      if (history.state && history.state.kmOverlay === "modal") {
+        try {
+          history.replaceState({ kmOverlay: "cart" }, "", window.location.href);
+          kmCartPushed = true;
+        } catch (_) {
+          kmCartPushed = false;
+        }
+      }
+    }
+
+    if (!wasCartOpen) {
+      lastFocusedBeforeCart = document.activeElement;
+    }
+
     cartDrawer.removeAttribute("hidden");
     cartDrawer.setAttribute("aria-hidden", "false");
     // Prevent focusing inside when closed (supported in modern browsers)
@@ -626,10 +718,27 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cartDrawerClose && typeof cartDrawerClose.focus === "function") {
       cartDrawerClose.focus();
     }
+    if (!wasCartOpen && !kmCartPushed) {
+      try {
+        history.pushState({ kmOverlay: "cart" }, "", window.location.href);
+        kmCartPushed = true;
+      } catch (_) {
+        kmCartPushed = false;
+      }
+    }
   }
 
-  function closeCartDrawer() {
-    if (!cartDrawer) return;
+  function closeCartDrawer(fromPopState) {
+    if (!cartDrawer || !cartDrawer.classList.contains("is-open")) return;
+    if (!fromPopState) {
+      if (kmCartPushed) {
+        history.back();
+      } else {
+        closeCartDrawer(true);
+      }
+      return;
+    }
+    kmCartPushed = false;
     // Important A11Y: jangan hide drawer saat fokus masih di dalamnya.
     var activeEl = document.activeElement;
     if (activeEl && cartDrawer.contains(activeEl)) {
@@ -650,16 +759,36 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.classList.remove("cart-open");
   }
 
-  function addToCart(menuItem, qty) {
+  window.addEventListener("popstate", function () {
+    if (cartDrawer && cartDrawer.classList.contains("is-open")) {
+      closeCartDrawer(true);
+      return;
+    }
+    if (menuModal && menuModal.classList.contains("is-open")) {
+      closeMenuModal(true);
+    }
+  });
+
+  function addToCart(menuItem, qty, sausPilihan) {
     if (!menuItem) return;
     var addQty = qty && qty > 0 ? qty : 1;
+    var saus = "";
+    if (menuItem.pilihanSaus && menuItem.pilihanSaus.length) {
+      var pick =
+        sausPilihan && menuItem.pilihanSaus.indexOf(sausPilihan) !== -1
+          ? sausPilihan
+          : menuItem.pilihanSaus[0];
+      saus = pick;
+    }
+    var line = { id: menuItem.id, qty: Math.min(99, addQty) };
+    if (saus) line.saus = saus;
     var existing = cart.find(function (x) {
-      return x.id === menuItem.id;
+      return cartLinesMatchForMerge(x, line);
     });
     if (existing) {
       existing.qty = Math.min(99, existing.qty + addQty);
     } else {
-      cart.push({ id: menuItem.id, qty: Math.min(99, addQty) });
+      cart.push(line);
     }
     saveCart();
     setCartBadges();
@@ -671,6 +800,14 @@ document.addEventListener("DOMContentLoaded", function () {
   var TOAST_MSG_CART_ADDED = "Berhasil ditambahkan";
   var toastEl = null;
   var toastTimer = null;
+
+  function hideToast() {
+    if (toastTimer) {
+      window.clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+    if (toastEl) toastEl.classList.remove("is-show");
+  }
 
   function showToast(text, opts) {
     if (!text) return;
@@ -697,7 +834,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
           options.onAction();
         } finally {
-          toastEl.classList.remove("is-show");
+          hideToast();
         }
       });
       toastEl.appendChild(btn);
@@ -707,13 +844,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    toastTimer = window.setTimeout(
-      function () {
-        if (!toastEl) return;
-        toastEl.classList.remove("is-show");
-      },
-      reduceMotion ? 2100 : 2700,
-    );
+    toastTimer = window.setTimeout(hideToast, reduceMotion ? 2100 : 2700);
   }
 
   function bumpClickAnim(el, className) {
@@ -729,15 +860,16 @@ document.addEventListener("DOMContentLoaded", function () {
     el.classList.add(cn);
   }
 
-  function setQty(id, qty) {
+  function setQty(id, qty, saus) {
+    var s = saus != null ? String(saus) : "";
     var q = Math.floor(qty);
     if (q <= 0) {
       cart = cart.filter(function (x) {
-        return x.id !== id;
+        return !cartLineMatchesIdSaus(x, id, s);
       });
     } else {
       cart.forEach(function (x) {
-        if (x.id === id) x.qty = Math.min(99, q);
+        if (cartLineMatchesIdSaus(x, id, s)) x.qty = Math.min(99, q);
       });
     }
     saveCart();
@@ -785,10 +917,15 @@ document.addEventListener("DOMContentLoaded", function () {
       var item = findMenuById(x.id);
       if (!item) return;
       var subtotal = item.harga * x.qty;
+      var sausTxt =
+        x.saus && item.pilihanSaus && item.pilihanSaus.length
+          ? " (Saus: " + x.saus + ")"
+          : "";
       lines.push(
         idx++ +
           ") " +
           item.nama +
+          sausTxt +
           " — " +
           x.qty +
           " x " +
@@ -799,8 +936,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     lines.push("");
     lines.push("Total: " + formatRupiah(cartTotal()));
-    // lines.push("");
-    // lines.push("Catatan: (opsional) alamat (jika delivery), patokan, dll.");
+    lines.push("");
+    lines.push("Catatan:");
 
     var msg = encodeURIComponent(lines.join("\n"));
     cartCheckout.href = "https://wa.me/6285117693117?text=" + msg;
@@ -863,18 +1000,23 @@ document.addEventListener("DOMContentLoaded", function () {
       name.textContent = item.nama;
       var meta = document.createElement("div");
       meta.className = "cart-item__meta";
-      meta.textContent = formatRupiah(item.harga);
+      var metaParts = [formatRupiah(item.harga)];
+      if (x.saus && item.pilihanSaus && item.pilihanSaus.length) {
+        metaParts.push("Saus: " + x.saus);
+      }
+      meta.textContent = metaParts.join(" · ");
 
       var bottom = document.createElement("div");
       bottom.className = "cart-item__row";
 
+      var lineSaus = cartLineSaus(x);
       var qty = document.createElement("div");
       qty.className = "cart-qty";
       var minus = document.createElement("button");
       minus.type = "button";
       minus.textContent = "−";
       minus.addEventListener("click", function () {
-        setQty(item.id, x.qty - 1);
+        setQty(item.id, x.qty - 1, lineSaus);
       });
       var num = document.createElement("span");
       num.textContent = String(x.qty);
@@ -882,7 +1024,7 @@ document.addEventListener("DOMContentLoaded", function () {
       plus.type = "button";
       plus.textContent = "+";
       plus.addEventListener("click", function () {
-        setQty(item.id, x.qty + 1);
+        setQty(item.id, x.qty + 1, lineSaus);
       });
       qty.appendChild(minus);
       qty.appendChild(num);
@@ -893,7 +1035,7 @@ document.addEventListener("DOMContentLoaded", function () {
       remove.className = "cart-remove";
       remove.textContent = "Hapus";
       remove.addEventListener("click", function () {
-        setQty(item.id, 0);
+        setQty(item.id, 0, lineSaus);
       });
 
       bottom.appendChild(qty);
@@ -920,7 +1062,18 @@ document.addEventListener("DOMContentLoaded", function () {
   if (modalAddToCartBtn) {
     modalAddToCartBtn.addEventListener("click", function () {
       if (!currentModalItem) return;
-      addToCart(currentModalItem, 1);
+      var sausPick = "";
+      if (
+        currentModalItem.pilihanSaus &&
+        currentModalItem.pilihanSaus.length &&
+        menuModal
+      ) {
+        var chk = qs('input[name="menuModalSaus"]:checked', menuModal);
+        sausPick = chk
+          ? chk.value
+          : currentModalItem.pilihanSaus[0];
+      }
+      addToCart(currentModalItem, 1, sausPick);
       showToast(TOAST_MSG_CART_ADDED, {
         actionText: "Lihat keranjang",
         onAction: openCartDrawer,
@@ -930,12 +1083,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
-    if (menuModal && menuModal.classList.contains("is-open")) {
-      closeMenuModal();
-      return;
-    }
+    /* Cart di atas modal jika keduanya terbuka — selaras dengan urutan Back. */
     if (cartDrawer && cartDrawer.classList.contains("is-open")) {
       closeCartDrawer();
+      return;
+    }
+    if (menuModal && menuModal.classList.contains("is-open")) {
+      closeMenuModal();
       return;
     }
     if (hamburger) hamburger.classList.remove("open");
@@ -1208,18 +1362,31 @@ document.addEventListener("DOMContentLoaded", function () {
     var addBtn = document.createElement("button");
     addBtn.type = "button";
     addBtn.className = "menu-card__add";
-    addBtn.setAttribute("aria-label", "Tambah ke keranjang: " + item.nama);
     addBtn.textContent = "+";
-    addBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      bumpClickAnim(addBtn, "is-bump");
-      addToCart(item, 1);
-      showToast(TOAST_MSG_CART_ADDED, {
-        actionText: "Lihat keranjang",
-        onAction: openCartDrawer,
+    if (item.pilihanSaus && item.pilihanSaus.length) {
+      addBtn.setAttribute(
+        "aria-label",
+        "Buka detail untuk pilih saus: " + item.nama,
+      );
+      addBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        bumpClickAnim(addBtn, "is-bump");
+        openMenuModal(item);
       });
-    });
+    } else {
+      addBtn.setAttribute("aria-label", "Tambah ke keranjang: " + item.nama);
+      addBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        bumpClickAnim(addBtn, "is-bump");
+        addToCart(item, 1);
+        showToast(TOAST_MSG_CART_ADDED, {
+          actionText: "Lihat keranjang",
+          onAction: openCartDrawer,
+        });
+      });
+    }
 
     var isBestSeller = bestSellerIds && bestSellerIds.indexOf(item.id) !== -1;
     if (isBestSeller) {

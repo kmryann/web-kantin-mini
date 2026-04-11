@@ -1422,6 +1422,72 @@ body.modal-open {
   margin-bottom: 22px;
 }
 
+.menu-modal__saus {
+  margin-bottom: 18px;
+}
+
+.menu-modal__saus[hidden] {
+  display: none !important;
+}
+
+.menu-modal__saus-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.menu-modal__seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.menu-modal__seg-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--teal);
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.8rem;
+  user-select: none;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.menu-modal__seg-item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.menu-modal__seg-item:has(input:checked) {
+  border-color: rgba(238, 82, 31, 0.55);
+  box-shadow: 0 0 0 3px rgba(238, 82, 31, 0.14);
+}
+
+.menu-modal__seg-item:has(input:checked) span {
+  color: var(--primary-dark);
+}
+
+@supports not selector(:has(*)) {
+  .menu-modal__seg-item input {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .menu-modal__seg-item {
+    justify-content: flex-start;
+  }
+}
+
 .menu-modal__body > .btn--primary {
   width: 100%;
   justify-content: center;
@@ -2220,7 +2286,8 @@ body.modal-open {
 .cart-drawer {
   position: fixed;
   inset: 0;
-  z-index: 3200;
+  /* Di atas toast (4000) agar footer keranjang tidak tertutup klik hantu */
+  z-index: 4500;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -2651,6 +2718,10 @@ body.cart-open {
 .toast.is-show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+.toast:not(.is-show) .toast__action {
+  pointer-events: none;
 }
 
 .toast__text {
