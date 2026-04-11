@@ -680,33 +680,68 @@
           <img id="menuModalImg" src="" alt="" width="640" height="640" />
         </div>
         <div class="menu-modal__body">
-          <p class="menu-modal__cat" id="menuModalCat"></p>
-          <p class="menu-modal__best" id="menuModalBest" hidden>Best Seller</p>
-          <h3 class="menu-modal__title" id="menuModalTitle"></h3>
-          <p class="menu-modal__price" id="menuModalPrice"></p>
-          <p class="menu-modal__desc" id="menuModalDesc"></p>
-          <div
-            class="menu-modal__saus"
-            id="menuModalSausWrap"
-            hidden
-          >
-            <p class="menu-modal__saus-label" id="menuModalSausLabel">
-              Pilih saus
-            </p>
+          <div class="menu-modal__body-main">
+            <p class="menu-modal__cat" id="menuModalCat"></p>
+            <p class="menu-modal__best" id="menuModalBest" hidden>Best Seller</p>
+            <h3 class="menu-modal__title" id="menuModalTitle"></h3>
+            <p class="menu-modal__price" id="menuModalPrice"></p>
+            <p class="menu-modal__desc" id="menuModalDesc"></p>
             <div
-              class="menu-modal__seg"
-              id="menuModalSausSeg"
-              role="radiogroup"
-              aria-labelledby="menuModalSausLabel"
-            ></div>
+              class="menu-modal__saus"
+              id="menuModalSausWrap"
+              hidden
+            >
+              <p class="menu-modal__saus-label" id="menuModalSausLabel">
+                Pilih saus
+              </p>
+              <div
+                class="menu-modal__seg"
+                id="menuModalSausSeg"
+                role="radiogroup"
+                aria-labelledby="menuModalSausLabel"
+              ></div>
+            </div>
+            <div class="menu-modal__qty" id="menuModalQtyWrap">
+              <span class="menu-modal__qty-label" id="menuModalQtyLabel"
+                >Jumlah</span>
+              <div
+                class="menu-modal__qty-controls"
+                role="group"
+                aria-labelledby="menuModalQtyLabel"
+              >
+                <button
+                  type="button"
+                  class="menu-modal__qty-btn"
+                  id="menuModalQtyMinus"
+                  aria-label="Kurangi jumlah"
+                >
+                  −
+                </button>
+                <span
+                  class="menu-modal__qty-value"
+                  id="menuModalQtyValue"
+                  aria-live="polite"
+                  >1</span>
+                <button
+                  type="button"
+                  class="menu-modal__qty-btn"
+                  id="menuModalQtyPlus"
+                  aria-label="Tambah jumlah"
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </div>
-          <button
-            type="button"
-            class="btn btn--primary"
-            id="menuModalAddToCart"
-          >
-            Tambah ke Keranjang
-          </button>
+          <div class="menu-modal__body-cta">
+            <button
+              type="button"
+              class="btn btn--primary"
+              id="menuModalAddToCart"
+            >
+              Tambah ke Keranjang
+            </button>
+          </div>
         </div>
       </div>
     </div>

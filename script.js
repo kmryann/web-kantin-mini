@@ -400,6 +400,16 @@ document.addEventListener("DOMContentLoaded", function () {
   var lastFocusedEl = null;
   var currentModalItem = null;
   var modalAddToCartBtn = qs("#menuModalAddToCart");
+  var menuModalOrderQty = 1;
+  var menuModalQtyValueEl = menuModal
+    ? qs("#menuModalQtyValue", menuModal)
+    : null;
+
+  function syncMenuModalQtyUi() {
+    if (menuModalQtyValueEl) {
+      menuModalQtyValueEl.textContent = String(menuModalOrderQty);
+    }
+  }
   /** Entri history dari pushState saat overlay terbuka (untuk tombol Back browser). */
   var kmModalPushed = false;
   var kmCartPushed = false;
@@ -484,6 +494,8 @@ document.addEventListener("DOMContentLoaded", function () {
         menuModalSausSeg.innerHTML = "";
       }
     }
+    menuModalOrderQty = 1;
+    syncMenuModalQtyUi();
     menuModal.removeAttribute("hidden");
     menuModal.setAttribute("aria-hidden", "false");
     menuModal.classList.add("is-open");
@@ -1073,11 +1085,36 @@ document.addEventListener("DOMContentLoaded", function () {
           ? chk.value
           : currentModalItem.pilihanSaus[0];
       }
-      addToCart(currentModalItem, 1, sausPick);
+      addToCart(currentModalItem, menuModalOrderQty, sausPick);
+      menuModalOrderQty = 1;
+      syncMenuModalQtyUi();
       showToast(TOAST_MSG_CART_ADDED, {
         actionText: "Lihat keranjang",
         onAction: openCartDrawer,
       });
+    });
+  }
+
+  var menuModalQtyMinus = menuModal
+    ? qs("#menuModalQtyMinus", menuModal)
+    : null;
+  var menuModalQtyPlus = menuModal
+    ? qs("#menuModalQtyPlus", menuModal)
+    : null;
+  if (menuModalQtyMinus) {
+    menuModalQtyMinus.addEventListener("click", function () {
+      if (menuModalOrderQty > 1) {
+        menuModalOrderQty--;
+        syncMenuModalQtyUi();
+      }
+    });
+  }
+  if (menuModalQtyPlus) {
+    menuModalQtyPlus.addEventListener("click", function () {
+      if (menuModalOrderQty < 99) {
+        menuModalOrderQty++;
+        syncMenuModalQtyUi();
+      }
     });
   }
 
