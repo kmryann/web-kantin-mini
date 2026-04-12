@@ -1430,7 +1430,7 @@ body.modal-open {
 }
 
 .menu-modal__title {
-  font-size: 1.35rem;
+  font-size: 1.20rem;
   font-weight: 800;
   color: var(--teal);
   line-height: 1.25;
@@ -1438,7 +1438,7 @@ body.modal-open {
 }
 
 .menu-modal__price {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--primary);
   margin-bottom: 16px;
@@ -1523,7 +1523,7 @@ body.modal-open {
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .menu-modal__qty-label {
@@ -1544,14 +1544,14 @@ body.modal-open {
 }
 
 .menu-modal__qty-btn {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
   border: none;
   background: var(--gray-100);
   cursor: pointer;
   font-weight: 900;
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1;
   color: var(--teal);
   display: inline-flex;
