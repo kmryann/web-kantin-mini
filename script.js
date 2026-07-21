@@ -209,14 +209,14 @@ var MENU_DATA = [
     deskripsi: "Kwetiau kuah gurih",
     foto: "img/foto-menu/kwetiau-kuah.webp",
   },
-  {
-    id: 27,
-    nama: "Mie Goreng/Kuah",
-    kategori: "Mie & Pasta",
-    harga: 6500,
-    deskripsi: "Mie goreng/kuah spesial",
-    foto: "img/foto-menu/mie-gorengrebus.webp",
-  },
+  // {
+  //   id: 27,
+  //   nama: "Mie Goreng/Kuah",
+  //   kategori: "Mie & Pasta",
+  //   harga: 6500,
+  //   deskripsi: "Mie goreng/kuah spesial",
+  //   foto: "img/foto-menu/mie-gorengrebus.webp",
+  // },
   {
     id: 28,
     nama: "Kapal Selam Besar",
