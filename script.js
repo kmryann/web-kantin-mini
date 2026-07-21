@@ -1,20 +1,22 @@
 /* ============================================================
-   script.js — Warung Nusantara
+   script.js — Kantin Mini
    ============================================================ */
 
 "use strict";
 
-var MENU_DATA = [
+const FALLBACK_IMAGE_MODAL = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=600&fit=crop";
+const FALLBACK_IMAGE_CARD = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
+const FALLBACK_IMAGE_CART = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop";
+
+const MENU_DATA = [
   {
     id: 1,
     nama: "Chicken Katsu",
     kategori: "Paket Nasi",
     harga: 16000,
-    // deskripsi: "Nasi + chicken katsu — pilih saus di detail.",
-    /** Opsi untuk baris keranjang & WA (harga sama). */
+    deskripsi: "Nasi + chicken katsu dengan pilihan saus gurih.",
     pilihanSaus: ["BBQ", "Lada Hitam", "Lava", "Sambal Geprek"],
     foto: "img/foto-menu/katsu-bbq.webp",
-    // bestSeller: true,
   },
   {
     id: 2,
@@ -80,14 +82,6 @@ var MENU_DATA = [
     deskripsi: "Ayam goreng renyah dengan kremesan gurih + tahu tempe",
     foto: "img/foto-menu/ayam-kremes.webp",
   },
-  // {
-  //   id: 10,
-  //   nama: "Ayam Tulang Lunak",
-  //   kategori: "Paket Nasi",
-  //   harga: 18000,
-  //   deskripsi: "Ayam goreng tulang lunak renyah dan gurih + tahu tempe",
-  //   foto: "img/foto-menu/ayam-tulanglunak.webp",
-  // },
   {
     id: 11,
     nama: "Ayam Pedas Daun Jeruk",
@@ -165,7 +159,7 @@ var MENU_DATA = [
     nama: "Kentang Katsu",
     kategori: "Light Bites",
     harga: 17000,
-    // deskripsi: "Pilihan saus: BBQ/Lada Hitam/Lava",
+    deskripsi: "Kentang katsu renyah dengan pilihan saus.",
     pilihanSaus: ["BBQ", "Lada Hitam", "Lava", "Sambal Geprek"],
     foto: "img/foto-menu/kentang-katsu.webp",
   },
@@ -209,14 +203,6 @@ var MENU_DATA = [
     deskripsi: "Kwetiau kuah gurih",
     foto: "img/foto-menu/kwetiau-kuah.webp",
   },
-  // {
-  //   id: 27,
-  //   nama: "Mie Goreng/Kuah",
-  //   kategori: "Mie & Pasta",
-  //   harga: 6500,
-  //   deskripsi: "Mie goreng/kuah spesial",
-  //   foto: "img/foto-menu/mie-gorengrebus.webp",
-  // },
   {
     id: 28,
     nama: "Kapal Selam Besar",
@@ -238,8 +224,7 @@ var MENU_DATA = [
     nama: "Pempek Kecil Isi 3",
     kategori: "Pempek",
     harga: 15000,
-    deskripsi:
-      "Isi 3 sejenis atau campur (kapal selam, lenjer, adaan, kulit) dengan cuko segar",
+    deskripsi: "Isi 3 sejenis atau campur (kapal selam, lenjer, adaan, kulit) dengan cuko segar",
     foto: "img/foto-menu/pempek-kecil.webp",
   },
   {
@@ -324,23 +309,24 @@ var MENU_DATA = [
   },
 ];
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   /* --- Utility --- */
-  function qs(sel, ctx) {
-    var root = ctx !== undefined ? ctx : document;
+  const qs = (sel, ctx) => {
+    const root = ctx !== undefined ? ctx : document;
     if (!root || typeof root.querySelector !== "function") return null;
     return root.querySelector(sel);
-  }
-  function qsa(sel, ctx) {
-    var root = ctx !== undefined ? ctx : document;
+  };
+  
+  const qsa = (sel, ctx) => {
+    const root = ctx !== undefined ? ctx : document;
     if (!root || typeof root.querySelectorAll !== "function") return [];
     return Array.from(root.querySelectorAll(sel));
-  }
+  };
 
   document.addEventListener(
     "animationend",
-    function (e) {
-      var t = e.target;
+    (e) => {
+      const t = e.target;
       if (!t || !t.classList) return;
       if (t.classList.contains("menu-card__add") && t.classList.contains("is-bump")) {
         t.classList.remove("is-bump");
@@ -348,36 +334,36 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     { passive: true },
   );
-  function formatRupiah(num) {
-    return "Rp " + Number(num).toLocaleString("id-ID");
-  }
-  function escapeHtml(str) {
-    var d = document.createElement("div");
+
+  const formatRupiah = (num) => "Rp " + Number(num).toLocaleString("id-ID");
+
+  const escapeHtml = (str) => {
+    const d = document.createElement("div");
     d.textContent = str;
     return d.innerHTML;
-  }
+  };
 
   /* ============================================================
      1. NAVBAR
      ============================================================ */
-  var navbar = qs("#navbar");
-  var hamburger = qs("#hamburger");
-  var navMenu = qs("#navMenu");
-  var navLinks = qsa(".nav-link");
+  const navbar = qs("#navbar");
+  const hamburger = qs("#hamburger");
+  const navMenu = qs("#navMenu");
+  const navLinks = qsa(".nav-link");
 
   if (hamburger && navMenu) {
     hamburger.setAttribute("aria-controls", "navMenu");
     hamburger.setAttribute("aria-expanded", "false");
-    hamburger.addEventListener("click", function (e) {
+    hamburger.addEventListener("click", (e) => {
       e.stopPropagation();
-      var open = hamburger.classList.toggle("open");
+      const open = hamburger.classList.toggle("open");
       navMenu.classList.toggle("open", open);
       hamburger.setAttribute("aria-expanded", open ? "true" : "false");
     });
   }
 
   if (navMenu) {
-    navMenu.addEventListener("click", function (e) {
+    navMenu.addEventListener("click", (e) => {
       if (e.target.closest(".nav-link")) {
         if (hamburger) hamburger.classList.remove("open");
         navMenu.classList.remove("open");
@@ -386,7 +372,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", (e) => {
     if (!navbar || !navbar.contains(e.target)) {
       if (hamburger) hamburger.classList.remove("open");
       if (navMenu) navMenu.classList.remove("open");
@@ -394,27 +380,26 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  var menuModal = qs("#menuModal");
-  var menuModalSausWrap = menuModal ? qs("#menuModalSausWrap", menuModal) : null;
-  var menuModalSausSeg = menuModal ? qs("#menuModalSausSeg", menuModal) : null;
-  var lastFocusedEl = null;
-  var currentModalItem = null;
-  var modalAddToCartBtn = qs("#menuModalAddToCart");
-  var menuModalOrderQty = 1;
-  var menuModalQtyValueEl = menuModal
-    ? qs("#menuModalQtyValue", menuModal)
-    : null;
+  const menuModal = qs("#menuModal");
+  const menuModalSausWrap = menuModal ? qs("#menuModalSausWrap", menuModal) : null;
+  const menuModalSausSeg = menuModal ? qs("#menuModalSausSeg", menuModal) : null;
+  let lastFocusedEl = null;
+  let currentModalItem = null;
+  const modalAddToCartBtn = qs("#menuModalAddToCart");
+  let menuModalOrderQty = 1;
+  const menuModalQtyValueEl = menuModal ? qs("#menuModalQtyValue", menuModal) : null;
 
-  function syncMenuModalQtyUi() {
+  const syncMenuModalQtyUi = () => {
     if (menuModalQtyValueEl) {
       menuModalQtyValueEl.textContent = String(menuModalOrderQty);
     }
-  }
-  /** Entri history dari pushState saat overlay terbuka (untuk tombol Back browser). */
-  var kmModalPushed = false;
-  var kmCartPushed = false;
+  };
 
-  function closeMenuModal(fromPopState) {
+  /** Entri history dari pushState saat overlay terbuka (untuk tombol Back browser). */
+  let kmModalPushed = false;
+  let kmCartPushed = false;
+
+  const closeMenuModal = (fromPopState) => {
     if (!menuModal || !menuModal.classList.contains("is-open")) return;
     if (!fromPopState) {
       if (kmModalPushed) {
@@ -426,12 +411,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     kmModalPushed = false;
     menuModal.classList.remove("is-open");
-    var bestEl = qs("#menuModalBest", menuModal);
-    if (bestEl) bestEl.hidden = true;
 
-    // Important A11Y: don't set aria-hidden on an ancestor while a descendant still has focus.
     // Move focus back to the last focused element before hiding the modal.
-    var activeEl = document.activeElement;
+    const activeEl = document.activeElement;
     if (activeEl && menuModal.contains(activeEl)) {
       if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
         lastFocusedEl.focus();
@@ -441,49 +423,45 @@ document.addEventListener("DOMContentLoaded", function () {
     menuModal.setAttribute("aria-hidden", "true");
     menuModal.setAttribute("hidden", "");
     document.body.classList.remove("modal-open");
-  }
+  };
 
-  function openMenuModal(item) {
+  const openMenuModal = (item) => {
     if (!menuModal) return;
-    var wasOpen = menuModal.classList.contains("is-open");
+    const wasOpen = menuModal.classList.contains("is-open");
     currentModalItem = item;
     lastFocusedEl = document.activeElement;
-    var imgEl = qs("#menuModalImg", menuModal);
-    var catEl = qs("#menuModalCat", menuModal);
-    var bestEl = qs("#menuModalBest", menuModal);
-    var titleEl = qs("#menuModalTitle", menuModal);
-    var priceEl = qs("#menuModalPrice", menuModal);
-    var descEl = qs("#menuModalDesc", menuModal);
+    
+    const imgEl = qs("#menuModalImg", menuModal);
+    const catEl = qs("#menuModalCat", menuModal);
+    const titleEl = qs("#menuModalTitle", menuModal);
+    const priceEl = qs("#menuModalPrice", menuModal);
+    const descEl = qs("#menuModalDesc", menuModal);
+
     if (imgEl) {
       imgEl.src = item.foto;
       imgEl.alt = item.nama;
       imgEl.onerror = function () {
-        this.src =
-          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=600&fit=crop";
+        this.src = FALLBACK_IMAGE_MODAL;
       };
     }
     if (catEl) catEl.textContent = item.kategori;
-    if (bestEl) {
-      var isBestSeller = bestSellerIds && bestSellerIds.indexOf(item.id) !== -1;
-      bestEl.textContent = "Best Seller";
-      bestEl.hidden = !isBestSeller;
-    }
     if (titleEl) titleEl.textContent = item.nama;
     if (priceEl) priceEl.textContent = formatRupiah(item.harga);
     if (descEl) descEl.textContent = item.deskripsi;
+
     if (menuModalSausWrap && menuModalSausSeg) {
       if (item.pilihanSaus && item.pilihanSaus.length) {
         menuModalSausWrap.hidden = false;
         menuModalSausSeg.innerHTML = "";
-        item.pilihanSaus.forEach(function (label, i) {
-          var lab = document.createElement("label");
+        item.pilihanSaus.forEach((label, i) => {
+          const lab = document.createElement("label");
           lab.className = "menu-modal__seg-item";
-          var inp = document.createElement("input");
+          const inp = document.createElement("input");
           inp.type = "radio";
           inp.name = "menuModalSaus";
           inp.value = label;
           if (i === 0) inp.checked = true;
-          var sp = document.createElement("span");
+          const sp = document.createElement("span");
           sp.textContent = label;
           lab.appendChild(inp);
           lab.appendChild(sp);
@@ -500,8 +478,10 @@ document.addEventListener("DOMContentLoaded", function () {
     menuModal.setAttribute("aria-hidden", "false");
     menuModal.classList.add("is-open");
     document.body.classList.add("modal-open");
-    var closeBtn = qs("#menuModalClose", menuModal);
+    
+    const closeBtn = qs("#menuModalClose", menuModal);
     if (closeBtn) closeBtn.focus();
+    
     if (!wasOpen) {
       try {
         history.pushState({ kmOverlay: "modal" }, "", window.location.href);
@@ -510,130 +490,123 @@ document.addEventListener("DOMContentLoaded", function () {
         kmModalPushed = false;
       }
     }
-  }
+  };
 
   /* ============================================================
      1b. CART (RINGAN) — simpan multi item + checkout via WhatsApp
      ============================================================ */
-  var CART_STORAGE_KEY = "kantinmini_cart_v1";
-  var CART_NAME_KEY = "kantinmini_cart_name_v1";
-  var CART_ORDER_TYPE_KEY = "kantinmini_cart_order_type_v1";
-  var CART_PICKUP_TIME_KEY = "kantinmini_cart_pickup_time_v1";
-  var cartFab = qs("#cartFab");
-  var cartFabCount = qs("#cartFabCount");
-  var cartNavBtn = qs("#cartNavBtn");
-  var cartNavCount = qs("#cartNavCount");
-  var cartDrawer = qs("#cartDrawer");
-  var cartDrawerBody = qs("#cartDrawerBody");
-  var cartDrawerTotal = qs("#cartDrawerTotal");
-  var cartDrawerClose = qs("#cartDrawerClose");
-  var cartClearBtn = qs("#cartClear");
-  var cartCheckout = qs("#cartCheckout");
-  var cartNameInput = qs("#cartName");
-  var cartPickupWrap = qs("#cartPickupWrap");
-  var cartPickupInput = qs("#cartPickupTime");
-  var lastFocusedBeforeCart = null;
+  const CART_STORAGE_KEY = "kantinmini_cart_v1";
+  const CART_NAME_KEY = "kantinmini_cart_name_v1";
+  const CART_ORDER_TYPE_KEY = "kantinmini_cart_order_type_v1";
+  const CART_PICKUP_TIME_KEY = "kantinmini_cart_pickup_time_v1";
+  
+  const cartFab = qs("#cartFab");
+  const cartFabCount = qs("#cartFabCount");
+  const cartNavBtn = qs("#cartNavBtn");
+  const cartNavCount = qs("#cartNavCount");
+  const cartDrawer = qs("#cartDrawer");
+  const cartDrawerBody = qs("#cartDrawerBody");
+  const cartDrawerTotal = qs("#cartDrawerTotal");
+  const cartDrawerClose = qs("#cartDrawerClose");
+  const cartClearBtn = qs("#cartClear");
+  const cartCheckout = qs("#cartCheckout");
+  const cartNameInput = qs("#cartName");
+  const cartPickupWrap = qs("#cartPickupWrap");
+  const cartPickupInput = qs("#cartPickupTime");
+  let lastFocusedBeforeCart = null;
 
-  var cart = [];
-  var cartName = "";
-  var cartOrderType = "dinein";
-  var cartPickupTime = "";
+  let cart = [];
+  let cartName = "";
+  let cartOrderType = "dinein";
+  let cartPickupTime = "";
 
-  function haptic(ms) {
+  const haptic = (ms) => {
     try {
       if (!navigator.vibrate) return;
       navigator.vibrate(typeof ms === "number" ? ms : 10);
     } catch (_) {
       // ignore
     }
-  }
+  };
 
-  function loadOrderType() {
+  const loadOrderType = () => {
     try {
-      var raw = window.localStorage.getItem(CART_ORDER_TYPE_KEY);
+      const raw = window.localStorage.getItem(CART_ORDER_TYPE_KEY);
       if (raw === "dinein" || raw === "takeaway") return raw;
       return "dinein";
     } catch (_) {
       return "dinein";
     }
-  }
+  };
 
-  function saveOrderType() {
+  const saveOrderType = () => {
     try {
       window.localStorage.setItem(CART_ORDER_TYPE_KEY, cartOrderType);
     } catch (_) {
       // ignore
     }
-  }
+  };
 
-  function loadPickupTime() {
+  const loadPickupTime = () => {
     try {
-      var raw = window.localStorage.getItem(CART_PICKUP_TIME_KEY);
+      const raw = window.localStorage.getItem(CART_PICKUP_TIME_KEY);
       if (!raw) return "";
       return String(raw).slice(0, 10);
     } catch (_) {
       return "";
     }
-  }
+  };
 
-  function savePickupTime() {
+  const savePickupTime = () => {
     try {
       window.localStorage.setItem(CART_PICKUP_TIME_KEY, cartPickupTime);
     } catch (_) {
       // ignore
     }
-  }
+  };
 
-  function syncPickupUI() {
+  const syncPickupUI = () => {
     if (!cartPickupWrap) return;
-    var show = cartOrderType === "takeaway";
+    const show = cartOrderType === "takeaway";
     cartPickupWrap.hidden = !show;
     if (!show) return;
     if (cartPickupInput) cartPickupInput.value = cartPickupTime || "";
-  }
+  };
 
-  function loadCartName() {
+  const loadCartName = () => {
     try {
-      var raw = window.localStorage.getItem(CART_NAME_KEY);
+      const raw = window.localStorage.getItem(CART_NAME_KEY);
       if (!raw) return "";
       return String(raw).slice(0, 80);
     } catch (_) {
       return "";
     }
-  }
+  };
 
-  function saveCartName() {
+  const saveCartName = () => {
     try {
       window.localStorage.setItem(CART_NAME_KEY, cartName);
     } catch (_) {
       // ignore
     }
-  }
+  };
 
-  function loadCart() {
+  const loadCart = () => {
     try {
-      var raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
       if (!raw) return [];
-      var parsed = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) return [];
       return parsed
-        .filter(function (x) {
-          return (
-            x &&
-            typeof x.id === "number" &&
-            typeof x.qty === "number" &&
-            x.qty > 0
-          );
-        })
-        .map(function (x) {
-          var line = { id: x.id, qty: Math.floor(x.qty) };
+        .filter((x) => x && typeof x.id === "number" && typeof x.qty === "number" && x.qty > 0)
+        .map((x) => {
+          const line = { id: x.id, qty: Math.floor(x.qty) };
           if (x.saus && typeof x.saus === "string") {
             line.saus = String(x.saus).slice(0, 40);
           }
-          var m = findMenuById(line.id);
+          const m = findMenuById(line.id);
           if (m && m.pilihanSaus && m.pilihanSaus.length) {
-            var valid =
-              line.saus && m.pilihanSaus.indexOf(line.saus) !== -1;
+            const valid = line.saus && m.pilihanSaus.indexOf(line.saus) !== -1;
             if (!valid) line.saus = m.pilihanSaus[0];
           }
           return line;
@@ -641,52 +614,44 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (_) {
       return [];
     }
-  }
+  };
 
-  function saveCart() {
+  const saveCart = () => {
     try {
       window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
     } catch (_) {
       // ignore
     }
-  }
+  };
 
-  function cartCount() {
-    return cart.reduce(function (sum, x) {
-      return sum + (x.qty || 0);
-    }, 0);
-  }
+  const cartCount = () => cart.reduce((sum, x) => sum + (x.qty || 0), 0);
 
-  function findMenuById(id) {
-    for (var i = 0; i < MENU_DATA.length; i++) {
+  const findMenuById = (id) => {
+    for (let i = 0; i < MENU_DATA.length; i++) {
       if (MENU_DATA[i].id === id) return MENU_DATA[i];
     }
     return null;
-  }
+  };
 
-  function cartLineSaus(x) {
-    return x && x.saus ? String(x.saus) : "";
-  }
+  const cartLineSaus = (x) => (x && x.saus ? String(x.saus) : "");
 
-  function cartLinesMatchForMerge(a, b) {
-    return a.id === b.id && cartLineSaus(a) === cartLineSaus(b);
-  }
+  const cartLinesMatchForMerge = (a, b) => a.id === b.id && cartLineSaus(a) === cartLineSaus(b);
 
-  function cartLineMatchesIdSaus(x, id, saus) {
-    var s = saus != null ? String(saus) : "";
+  const cartLineMatchesIdSaus = (x, id, saus) => {
+    const s = saus != null ? String(saus) : "";
     return x.id === id && cartLineSaus(x) === s;
-  }
+  };
 
-  function cartTotal() {
-    return cart.reduce(function (sum, x) {
-      var item = findMenuById(x.id);
+  const cartTotal = () => {
+    return cart.reduce((sum, x) => {
+      const item = findMenuById(x.id);
       if (!item) return sum;
       return sum + item.harga * x.qty;
     }, 0);
-  }
+  };
 
-  function setCartBadges() {
-    var c = String(cartCount());
+  const setCartBadges = () => {
+    const c = String(cartCount());
     if (cartFabCount) {
       cartFabCount.textContent = c;
       bumpClickAnim(cartFabCount, "is-badge-bump");
@@ -695,15 +660,14 @@ document.addEventListener("DOMContentLoaded", function () {
       cartNavCount.textContent = c;
       bumpClickAnim(cartNavCount, "is-badge-bump");
     }
-  }
+  };
 
-  function openCartDrawer() {
+  const openCartDrawer = () => {
     if (!cartDrawer) return;
     hideToast();
-    var wasCartOpen = cartDrawer.classList.contains("is-open");
-    var modalWasOpen = menuModal && menuModal.classList.contains("is-open");
+    const wasCartOpen = cartDrawer.classList.contains("is-open");
+    const modalWasOpen = menuModal && menuModal.classList.contains("is-open");
 
-    /* Dari toast "Lihat keranjang": tutup modal + satu entri history = cart (bukan modal lalu cart). */
     if (modalWasOpen && !wasCartOpen) {
       closeMenuModal(true);
       if (history.state && history.state.kmOverlay === "modal") {
@@ -722,14 +686,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     cartDrawer.removeAttribute("hidden");
     cartDrawer.setAttribute("aria-hidden", "false");
-    // Prevent focusing inside when closed (supported in modern browsers)
     if (typeof cartDrawer.inert !== "undefined") cartDrawer.inert = false;
     cartDrawer.classList.add("is-open");
     document.body.classList.add("cart-open");
     renderCart();
+    
     if (cartDrawerClose && typeof cartDrawerClose.focus === "function") {
       cartDrawerClose.focus();
     }
+    
     if (!wasCartOpen && !kmCartPushed) {
       try {
         history.pushState({ kmOverlay: "cart" }, "", window.location.href);
@@ -738,9 +703,9 @@ document.addEventListener("DOMContentLoaded", function () {
         kmCartPushed = false;
       }
     }
-  }
+  };
 
-  function closeCartDrawer(fromPopState) {
+  const closeCartDrawer = (fromPopState) => {
     if (!cartDrawer || !cartDrawer.classList.contains("is-open")) return;
     if (!fromPopState) {
       if (kmCartPushed) {
@@ -751,8 +716,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     kmCartPushed = false;
-    // Important A11Y: jangan hide drawer saat fokus masih di dalamnya.
-    var activeEl = document.activeElement;
+    
+    const activeEl = document.activeElement;
     if (activeEl && cartDrawer.contains(activeEl)) {
       if (lastFocusedBeforeCart && typeof lastFocusedBeforeCart.focus === "function") {
         lastFocusedBeforeCart.focus();
@@ -764,14 +729,15 @@ document.addEventListener("DOMContentLoaded", function () {
         activeEl.blur();
       }
     }
+    
     cartDrawer.classList.remove("is-open");
     cartDrawer.setAttribute("aria-hidden", "true");
     cartDrawer.setAttribute("hidden", "");
     if (typeof cartDrawer.inert !== "undefined") cartDrawer.inert = true;
     document.body.classList.remove("cart-open");
-  }
+  };
 
-  window.addEventListener("popstate", function () {
+  window.addEventListener("popstate", () => {
     if (cartDrawer && cartDrawer.classList.contains("is-open")) {
       closeCartDrawer(true);
       return;
@@ -781,22 +747,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  function addToCart(menuItem, qty, sausPilihan) {
+  const addToCart = (menuItem, qty, sausPilihan) => {
     if (!menuItem) return;
-    var addQty = qty && qty > 0 ? qty : 1;
-    var saus = "";
+    const addQty = qty && qty > 0 ? qty : 1;
+    let saus = "";
     if (menuItem.pilihanSaus && menuItem.pilihanSaus.length) {
-      var pick =
-        sausPilihan && menuItem.pilihanSaus.indexOf(sausPilihan) !== -1
-          ? sausPilihan
-          : menuItem.pilihanSaus[0];
+      const pick = sausPilihan && menuItem.pilihanSaus.indexOf(sausPilihan) !== -1
+        ? sausPilihan
+        : menuItem.pilihanSaus[0];
       saus = pick;
     }
-    var line = { id: menuItem.id, qty: Math.min(99, addQty) };
+    const line = { id: menuItem.id, qty: Math.min(99, addQty) };
     if (saus) line.saus = saus;
-    var existing = cart.find(function (x) {
-      return cartLinesMatchForMerge(x, line);
-    });
+    
+    const existing = cart.find((x) => cartLinesMatchForMerge(x, line));
     if (existing) {
       existing.qty = Math.min(99, existing.qty + addQty);
     } else {
@@ -806,24 +770,24 @@ document.addEventListener("DOMContentLoaded", function () {
     setCartBadges();
     renderCart();
     haptic(10);
-  }
+  };
 
   /* Toast kecil */
-  var TOAST_MSG_CART_ADDED = "Berhasil ditambahkan";
-  var toastEl = null;
-  var toastTimer = null;
+  const TOAST_MSG_CART_ADDED = "Berhasil ditambahkan";
+  let toastEl = null;
+  let toastTimer = null;
 
-  function hideToast() {
+  const hideToast = () => {
     if (toastTimer) {
       window.clearTimeout(toastTimer);
       toastTimer = null;
     }
     if (toastEl) toastEl.classList.remove("is-show");
-  }
+  };
 
-  function showToast(text, opts) {
+  const showToast = (text, opts) => {
     if (!text) return;
-    var options = opts || {};
+    const options = opts || {};
     if (!toastEl) {
       toastEl = document.createElement("div");
       toastEl.className = "toast";
@@ -832,17 +796,17 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.appendChild(toastEl);
     }
     toastEl.innerHTML = "";
-    var msg = document.createElement("span");
+    const msg = document.createElement("span");
     msg.className = "toast__text";
     msg.textContent = text;
     toastEl.appendChild(msg);
 
     if (options && options.actionText && typeof options.onAction === "function") {
-      var btn = document.createElement("button");
+      const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "toast__action";
       btn.textContent = options.actionText;
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", () => {
         try {
           options.onAction();
         } finally {
@@ -853,50 +817,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     toastEl.classList.add("is-show");
     if (toastTimer) window.clearTimeout(toastTimer);
-    var reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     toastTimer = window.setTimeout(hideToast, reduceMotion ? 2100 : 2700);
-  }
+  };
 
-  function bumpClickAnim(el, className) {
+  const bumpClickAnim = (el, className) => {
     if (!el) return;
-    var reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) return;
-    var cn = className || "is-bump";
+    const cn = className || "is-bump";
     el.classList.remove(cn);
     // Force reflow supaya animasi bisa diputar ulang setiap klik.
     void el.offsetWidth;
     el.classList.add(cn);
-  }
+  };
 
-  function setQty(id, qty, saus) {
-    var s = saus != null ? String(saus) : "";
-    var q = Math.floor(qty);
+  const setQty = (id, qty, saus) => {
+    const s = saus != null ? String(saus) : "";
+    const q = Math.floor(qty);
     if (q <= 0) {
-      cart = cart.filter(function (x) {
-        return !cartLineMatchesIdSaus(x, id, s);
-      });
+      cart = cart.filter((x) => !cartLineMatchesIdSaus(x, id, s));
     } else {
-      cart.forEach(function (x) {
+      cart.forEach((x) => {
         if (cartLineMatchesIdSaus(x, id, s)) x.qty = Math.min(99, q);
       });
     }
     saveCart();
     setCartBadges();
     renderCart();
-  }
+  };
 
-  function clearCart() {
+  const clearCart = () => {
     cart = [];
     saveCart();
     setCartBadges();
     renderCart();
-  }
+  };
 
-  function buildCheckoutLink() {
+  const buildCheckoutLink = () => {
     if (!cartCheckout) return;
     if (cart.length === 0) {
       cartCheckout.href = "#";
@@ -910,11 +868,9 @@ document.addEventListener("DOMContentLoaded", function () {
     cartCheckout.style.pointerEvents = "";
     cartCheckout.style.opacity = "";
 
-    var lines = [];
+    const lines = [];
     lines.push("Halo Kantin Mini, saya ingin pesan.");
-    lines.push(
-      "Jenis: " + (cartOrderType === "takeaway" ? "Take Away" : "Dine-In"),
-    );
+    lines.push("Jenis: " + (cartOrderType === "takeaway" ? "Take Away" : "Dine-In"));
     if (cartName && cartName.trim()) {
       lines.push("Atas nama: " + cartName.trim());
     }
@@ -924,26 +880,16 @@ document.addEventListener("DOMContentLoaded", function () {
     lines.push("");
 
     lines.push("Pesanan:");
-    var idx = 1;
-    cart.forEach(function (x) {
-      var item = findMenuById(x.id);
+    let idx = 1;
+    cart.forEach((x) => {
+      const item = findMenuById(x.id);
       if (!item) return;
-      var subtotal = item.harga * x.qty;
-      var sausTxt =
-        x.saus && item.pilihanSaus && item.pilihanSaus.length
-          ? " (Saus: " + x.saus + ")"
-          : "";
+      const subtotal = item.harga * x.qty;
+      const sausTxt = x.saus && item.pilihanSaus && item.pilihanSaus.length
+        ? " (Saus: " + x.saus + ")"
+        : "";
       lines.push(
-        idx++ +
-          ") " +
-          item.nama +
-          sausTxt +
-          " — " +
-          x.qty +
-          " x " +
-          formatRupiah(item.harga) +
-          " = " +
-          formatRupiah(subtotal),
+        idx++ + ") " + item.nama + sausTxt + " — " + x.qty + " x " + formatRupiah(item.harga) + " = " + formatRupiah(subtotal)
       );
     });
     lines.push("");
@@ -951,34 +897,34 @@ document.addEventListener("DOMContentLoaded", function () {
     lines.push("");
     lines.push("Catatan:");
 
-    var msg = encodeURIComponent(lines.join("\n"));
+    const msg = encodeURIComponent(lines.join("\n"));
     cartCheckout.href = "https://wa.me/6285117693117?text=" + msg;
-  }
+  };
 
-  function renderCart() {
+  const renderCart = () => {
     if (!cartDrawerBody || !cartDrawerTotal) return;
 
     cartDrawerBody.innerHTML = "";
-    var total = cartTotal();
+    const total = cartTotal();
     cartDrawerTotal.textContent = formatRupiah(total);
     buildCheckoutLink();
 
     if (cart.length === 0) {
-      var empty = document.createElement("div");
+      const empty = document.createElement("div");
       empty.className = "cart-empty";
-      var msg = document.createElement("div");
+      const msg = document.createElement("div");
       msg.textContent = "Keranjang masih kosong.";
       empty.appendChild(msg);
 
-      var actions = document.createElement("div");
+      const actions = document.createElement("div");
       actions.className = "cart-empty__actions";
-      var go = document.createElement("button");
+      const go = document.createElement("button");
       go.type = "button";
       go.className = "btn btn--primary";
       go.textContent = "Lihat Menu";
-      go.addEventListener("click", function () {
+      go.addEventListener("click", () => {
         closeCartDrawer();
-        var target = document.getElementById("menu");
+        const target = document.getElementById("menu");
         if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
       });
       actions.appendChild(go);
@@ -987,66 +933,65 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    cart.forEach(function (x) {
-      var item = findMenuById(x.id);
+    cart.forEach((x) => {
+      const item = findMenuById(x.id);
       if (!item) return;
 
-      var row = document.createElement("div");
+      const row = document.createElement("div");
       row.className = "cart-item";
 
-      var imgWrap = document.createElement("div");
+      const imgWrap = document.createElement("div");
       imgWrap.className = "cart-item__img";
-      var img = document.createElement("img");
+      const img = document.createElement("img");
       img.src = item.foto;
       img.alt = item.nama;
       img.loading = "lazy";
       img.onerror = function () {
-        this.src =
-          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop";
+        this.src = FALLBACK_IMAGE_CART;
       };
       imgWrap.appendChild(img);
 
-      var info = document.createElement("div");
-      var name = document.createElement("div");
+      const info = document.createElement("div");
+      const name = document.createElement("div");
       name.className = "cart-item__name";
       name.textContent = item.nama;
-      var meta = document.createElement("div");
+      const meta = document.createElement("div");
       meta.className = "cart-item__meta";
-      var metaParts = [formatRupiah(item.harga)];
+      const metaParts = [formatRupiah(item.harga)];
       if (x.saus && item.pilihanSaus && item.pilihanSaus.length) {
         metaParts.push("Saus: " + x.saus);
       }
       meta.textContent = metaParts.join(" · ");
 
-      var bottom = document.createElement("div");
+      const bottom = document.createElement("div");
       bottom.className = "cart-item__row";
 
-      var lineSaus = cartLineSaus(x);
-      var qty = document.createElement("div");
+      const lineSaus = cartLineSaus(x);
+      const qty = document.createElement("div");
       qty.className = "cart-qty";
-      var minus = document.createElement("button");
+      const minus = document.createElement("button");
       minus.type = "button";
       minus.textContent = "−";
-      minus.addEventListener("click", function () {
+      minus.addEventListener("click", () => {
         setQty(item.id, x.qty - 1, lineSaus);
       });
-      var num = document.createElement("span");
+      const num = document.createElement("span");
       num.textContent = String(x.qty);
-      var plus = document.createElement("button");
+      const plus = document.createElement("button");
       plus.type = "button";
       plus.textContent = "+";
-      plus.addEventListener("click", function () {
+      plus.addEventListener("click", () => {
         setQty(item.id, x.qty + 1, lineSaus);
       });
       qty.appendChild(minus);
       qty.appendChild(num);
       qty.appendChild(plus);
 
-      var remove = document.createElement("button");
+      const remove = document.createElement("button");
       remove.type = "button";
       remove.className = "cart-remove";
       remove.textContent = "Hapus";
-      remove.addEventListener("click", function () {
+      remove.addEventListener("click", () => {
         setQty(item.id, 0, lineSaus);
       });
 
@@ -1061,29 +1006,23 @@ document.addEventListener("DOMContentLoaded", function () {
       row.appendChild(info);
       cartDrawerBody.appendChild(row);
     });
-  }
+  };
 
   if (menuModal) {
-    menuModal.addEventListener("click", function (e) {
+    menuModal.addEventListener("click", (e) => {
       if (e.target.closest("[data-modal-close]")) closeMenuModal();
     });
-    var modalCloseBtn = qs("#menuModalClose", menuModal);
+    const modalCloseBtn = qs("#menuModalClose", menuModal);
     if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeMenuModal);
   }
 
   if (modalAddToCartBtn) {
-    modalAddToCartBtn.addEventListener("click", function () {
+    modalAddToCartBtn.addEventListener("click", () => {
       if (!currentModalItem) return;
-      var sausPick = "";
-      if (
-        currentModalItem.pilihanSaus &&
-        currentModalItem.pilihanSaus.length &&
-        menuModal
-      ) {
-        var chk = qs('input[name="menuModalSaus"]:checked', menuModal);
-        sausPick = chk
-          ? chk.value
-          : currentModalItem.pilihanSaus[0];
+      let sausPick = "";
+      if (currentModalItem.pilihanSaus && currentModalItem.pilihanSaus.length && menuModal) {
+        const chk = qs('input[name="menuModalSaus"]:checked', menuModal);
+        sausPick = chk ? chk.value : currentModalItem.pilihanSaus[0];
       }
       addToCart(currentModalItem, menuModalOrderQty, sausPick);
       menuModalOrderQty = 1;
@@ -1095,14 +1034,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  var menuModalQtyMinus = menuModal
-    ? qs("#menuModalQtyMinus", menuModal)
-    : null;
-  var menuModalQtyPlus = menuModal
-    ? qs("#menuModalQtyPlus", menuModal)
-    : null;
+  const menuModalQtyMinus = menuModal ? qs("#menuModalQtyMinus", menuModal) : null;
+  const menuModalQtyPlus = menuModal ? qs("#menuModalQtyPlus", menuModal) : null;
+  
   if (menuModalQtyMinus) {
-    menuModalQtyMinus.addEventListener("click", function () {
+    menuModalQtyMinus.addEventListener("click", () => {
       if (menuModalOrderQty > 1) {
         menuModalOrderQty--;
         syncMenuModalQtyUi();
@@ -1110,7 +1046,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   if (menuModalQtyPlus) {
-    menuModalQtyPlus.addEventListener("click", function () {
+    menuModalQtyPlus.addEventListener("click", () => {
       if (menuModalOrderQty < 99) {
         menuModalOrderQty++;
         syncMenuModalQtyUi();
@@ -1118,9 +1054,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  document.addEventListener("keydown", function (e) {
+  document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    /* Cart di atas modal jika keduanya terbuka — selaras dengan urutan Back. */
     if (cartDrawer && cartDrawer.classList.contains("is-open")) {
       closeCartDrawer();
       return;
@@ -1134,50 +1069,45 @@ document.addEventListener("DOMContentLoaded", function () {
     if (hamburger) hamburger.setAttribute("aria-expanded", "false");
   });
 
-  function highlightActiveLink() {
-    var scrollY = window.scrollY + 100;
-    var current = "";
-    qsa("section[id]").forEach(function (sec) {
+  const highlightActiveLink = () => {
+    const scrollY = window.scrollY + 100;
+    let current = "";
+    qsa("section[id]").forEach((sec) => {
       if (sec.offsetTop <= scrollY) current = sec.id;
     });
-    navLinks.forEach(function (link) {
-      var href = link.getAttribute("href");
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href");
       if (!href || href.charAt(0) !== "#") return;
       link.classList.toggle("active", href.slice(1) === current);
     });
-  }
+  };
 
   highlightActiveLink();
 
   /* ============================================================
      2. SMOOTH SCROLL (offset navbar; hindari querySelector("#") yang invalid)
      ============================================================ */
-  qsa('a[href^="#"]').forEach(function (link) {
-    link.addEventListener("click", function (e) {
-      var href = link.getAttribute("href") || "";
+  qsa('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href") || "";
       if (href === "#" || href === "") {
         e.preventDefault();
-        var reduceMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)",
-        ).matches;
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({
           top: 0,
           behavior: reduceMotion ? "auto" : "smooth",
         });
         return;
       }
-      var id = href.slice(1);
+      const id = href.slice(1);
       if (!id) return;
-      var target = document.getElementById(id);
+      const target = document.getElementById(id);
       if (!target) return;
       e.preventDefault();
-      var navEl = qs("#navbar");
-      var navH = navEl && navEl.offsetHeight ? navEl.offsetHeight : 72;
-      var top =
-        target.getBoundingClientRect().top + window.scrollY - navH - 8;
-      var reduceMotion2 = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
+      const navEl = qs("#navbar");
+      const navH = navEl && navEl.offsetHeight ? navEl.offsetHeight : 72;
+      const top = target.getBoundingClientRect().top + window.scrollY - navH - 8;
+      const reduceMotion2 = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       window.scrollTo({
         top: Math.max(0, top),
         behavior: reduceMotion2 ? "auto" : "smooth",
@@ -1188,32 +1118,22 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ============================================================
      3. MENU
      ============================================================ */
-  var allMenuItems = [];
-  var filtersAttached = false;
-  var activeMenuFilter = "all";
-  var menuSearchInput = qs("#menuSearch");
-  var bestSellerIds = [];
-  var menuRevealObserver = null;
+  let allMenuItems = [];
+  let filtersAttached = false;
+  let activeMenuFilter = "all";
+  const menuSearchInput = qs("#menuSearch");
+  let menuRevealObserver = null;
 
-  function loadMenu() {
-    var grid = qs("#menuGrid");
-    var loading = qs("#menuLoading");
+  const loadMenu = () => {
+    const grid = qs("#menuGrid");
+    const loading = qs("#menuLoading");
     if (!grid) return;
 
-    qsa(".menu-card", grid).forEach(function (c) {
-      c.remove();
-    });
-    qsa(".menu__empty", grid).forEach(function (c) {
-      c.remove();
-    });
+    qsa(".menu-card", grid).forEach((c) => c.remove());
+    qsa(".menu__empty", grid).forEach((c) => c.remove());
 
     allMenuItems = MENU_DATA;
     activeMenuFilter = "all";
-    bestSellerIds = MENU_DATA.filter(function (i) {
-      return i.bestSeller === true;
-    }).map(function (i) {
-      return i.id;
-    });
 
     if (menuSearchInput) menuSearchInput.value = "";
 
@@ -1221,69 +1141,58 @@ document.addEventListener("DOMContentLoaded", function () {
     applyMenuView();
 
     if (loading) loading.classList.add("hidden");
-  }
+  };
 
   // expose for retry button in HTML
   window.loadMenu = loadMenu;
 
-  function getMenuItemsForCategory() {
+  const getMenuItemsForCategory = () => {
     if (activeMenuFilter === "all") return allMenuItems;
-    return allMenuItems.filter(function (i) {
-      return i.kategori === activeMenuFilter;
-    });
-  }
+    return allMenuItems.filter((i) => i.kategori === activeMenuFilter);
+  };
 
-  function itemMatchesSearch(item, q) {
+  const itemMatchesSearch = (item, q) => {
     if (!q) return true;
-    var hay = (
-      item.nama +
-      " " +
-      item.deskripsi +
-      " " +
-      item.kategori
-    ).toLowerCase();
-    var parts = q.toLowerCase().split(/\s+/).filter(Boolean);
-    for (var i = 0; i < parts.length; i++) {
+    const hay = (item.nama + " " + item.deskripsi + " " + item.kategori).toLowerCase();
+    const parts = q.toLowerCase().split(/\s+/).filter(Boolean);
+    for (let i = 0; i < parts.length; i++) {
       if (hay.indexOf(parts[i]) === -1) return false;
     }
     return true;
-  }
+  };
 
-  function applyMenuView() {
-    var base = getMenuItemsForCategory();
-    var q = menuSearchInput ? menuSearchInput.value.trim() : "";
-    var filtered = q
-      ? base.filter(function (i) {
-          return itemMatchesSearch(i, q);
-        })
-      : base;
+  const applyMenuView = () => {
+    const base = getMenuItemsForCategory();
+    const q = menuSearchInput ? menuSearchInput.value.trim() : "";
+    const filtered = q ? base.filter((i) => itemMatchesSearch(i, q)) : base;
     renderCards(filtered, q, base.length);
-  }
+  };
 
-  function buildFilterButtons(items) {
-    var filtersEl = qs("#menuFilters");
+  const buildFilterButtons = (items) => {
+    const filtersEl = qs("#menuFilters");
     if (!filtersEl) return;
 
-    var categories = [];
-    items.forEach(function (item) {
-      if (categories.indexOf(item.kategori) === -1)
+    const categories = [];
+    items.forEach((item) => {
+      if (categories.indexOf(item.kategori) === -1) {
         categories.push(item.kategori);
+      }
     });
 
-    qsa(".filter-btn[data-filter]", filtersEl).forEach(function (b) {
+    qsa(".filter-btn[data-filter]", filtersEl).forEach((b) => {
       if (b.dataset.filter !== "all") b.remove();
     });
 
-    var allBtn = qs('.filter-btn[data-filter="all"]', filtersEl);
+    const allBtn = qs('.filter-btn[data-filter="all"]', filtersEl);
     if (allBtn) {
       allBtn.classList.add("active");
-      qsa(".filter-btn", filtersEl).forEach(function (b) {
+      qsa(".filter-btn", filtersEl).forEach((b) => {
         if (b !== allBtn) b.classList.remove("active");
       });
     }
 
-    categories.forEach(function (cat) {
-      var btn = document.createElement("button");
+    categories.forEach((cat) => {
+      const btn = document.createElement("button");
       btn.className = "filter-btn";
       btn.dataset.filter = cat;
       btn.textContent = cat;
@@ -1292,61 +1201,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!filtersAttached) {
       filtersAttached = true;
-      filtersEl.addEventListener("click", function (e) {
-        var btn = e.target.closest(".filter-btn");
+      filtersEl.addEventListener("click", (e) => {
+        const btn = e.target.closest(".filter-btn");
         if (!btn) return;
 
-        qsa(".filter-btn", filtersEl).forEach(function (b) {
-          b.classList.remove("active");
-        });
+        qsa(".filter-btn", filtersEl).forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
         activeMenuFilter = btn.dataset.filter;
         applyMenuView();
       });
     }
-  }
+  };
 
   if (menuSearchInput) {
-    menuSearchInput.addEventListener("input", function () {
+    menuSearchInput.addEventListener("input", () => {
       applyMenuView();
     });
   }
 
-  function renderCards(items, searchQuery, baseCategoryCount) {
-    var grid = qs("#menuGrid");
-    var loading = qs("#menuLoading");
+  const renderCards = (items, searchQuery, baseCategoryCount) => {
+    const grid = qs("#menuGrid");
+    const loading = qs("#menuLoading");
     if (!grid) return;
 
-    qsa(".menu-card", grid).forEach(function (c) {
-      c.remove();
-    });
-    qsa(".menu__empty", grid).forEach(function (c) {
-      c.remove();
-    });
+    qsa(".menu-card", grid).forEach((c) => c.remove());
+    qsa(".menu__empty", grid).forEach((c) => c.remove());
 
-    function insertIntoGrid(node) {
+    const insertIntoGrid = (node) => {
       if (loading && loading.parentNode === grid) {
         grid.insertBefore(node, loading);
       } else {
         grid.appendChild(node);
       }
-    }
+    };
 
     if (items.length === 0) {
-      var empty = document.createElement("p");
+      const empty = document.createElement("p");
       empty.className = "menu__empty";
-      empty.style.cssText =
-        "grid-column:1/-1;text-align:center;color:#a09d97;padding:40px 0;";
-      var q = searchQuery && String(searchQuery).trim();
+      empty.style.cssText = "grid-column:1/-1;text-align:center;color:#a09d97;padding:40px 0;";
+      const q = searchQuery && String(searchQuery).trim();
+      
       if (baseCategoryCount === 0) {
-        empty.textContent =
-          activeMenuFilter === "all"
-            ? "Belum ada menu."
-            : "Tidak ada menu dalam kategori ini.";
+        empty.textContent = activeMenuFilter === "all"
+          ? "Belum ada menu."
+          : "Tidak ada menu dalam kategori ini.";
       } else if (q) {
-        empty.textContent =
-          "Tidak ada menu yang cocok dengan pencarian. Coba kata kunci lain.";
+        empty.textContent = "Tidak ada menu yang cocok dengan pencarian. Coba kata kunci lain.";
       } else {
         empty.textContent = "Tidak ada menu untuk ditampilkan.";
       }
@@ -1354,58 +1255,54 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    items.forEach(function (item, idx) {
+    items.forEach((item, idx) => {
       insertIntoGrid(createCard(item, idx));
     });
-  }
+  };
 
-  /* --- Fungsi Create Card yang Benar --- */
-  function createCard(item, idx) {
-    var card = document.createElement("article");
+  const createCard = (item, idx) => {
+    const card = document.createElement("article");
     card.className = "menu-card";
     card.style.animationDelay = (idx * 60) + "ms";
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
     card.setAttribute("aria-label", "Lihat detail: " + item.nama);
 
-    card.addEventListener("click", function () {
+    card.addEventListener("click", () => {
       openMenuModal(item);
     });
 
-    card.addEventListener("keydown", function (e) {
+    card.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         openMenuModal(item);
       }
     });
 
-    var photo = document.createElement("div");
+    const photo = document.createElement("div");
     photo.className = "menu-card__photo";
 
-    var img = document.createElement("img");
+    const img = document.createElement("img");
     img.src = item.foto;
     img.alt = item.nama;
     img.loading = "lazy";
     img.onerror = function () {
-      this.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop";
+      this.src = FALLBACK_IMAGE_CARD;
     };
 
-    var badge = document.createElement("span");
+    const badge = document.createElement("span");
     badge.className = "menu-card__badge";
     badge.textContent = item.kategori;
-    // badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/\s+/g, "-"));
     badge.classList.add("cat-" + item.kategori.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
 
-    var addBtn = document.createElement("button");
+    const addBtn = document.createElement("button");
     addBtn.type = "button";
     addBtn.className = "menu-card__add";
     addBtn.textContent = "+";
+    
     if (item.pilihanSaus && item.pilihanSaus.length) {
-      addBtn.setAttribute(
-        "aria-label",
-        "Buka detail untuk pilih saus: " + item.nama,
-      );
-      addBtn.addEventListener("click", function (e) {
+      addBtn.setAttribute("aria-label", "Buka detail untuk pilih saus: " + item.nama);
+      addBtn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
         bumpClickAnim(addBtn, "is-bump");
@@ -1413,7 +1310,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     } else {
       addBtn.setAttribute("aria-label", "Tambah ke keranjang: " + item.nama);
-      addBtn.addEventListener("click", function (e) {
+      addBtn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
         bumpClickAnim(addBtn, "is-bump");
@@ -1425,32 +1322,24 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    var isBestSeller = bestSellerIds && bestSellerIds.indexOf(item.id) !== -1;
-    if (isBestSeller) {
-      var best = document.createElement("span");
-      best.className = "menu-card__best";
-      best.textContent = "Best Seller";
-      photo.appendChild(best);
-    }
-
     photo.appendChild(img);
     photo.appendChild(badge);
 
-    var body = document.createElement("div");
+    const body = document.createElement("div");
     body.className = "menu-card__body";
 
-    var name = document.createElement("h3");
+    const name = document.createElement("h3");
     name.className = "menu-card__name";
     name.textContent = item.nama;
 
-    var desc = document.createElement("p");
+    const desc = document.createElement("p");
     desc.className = "menu-card__desc";
     desc.textContent = item.deskripsi;
 
-    var footer = document.createElement("div");
+    const footer = document.createElement("div");
     footer.className = "menu-card__footer";
 
-    var price = document.createElement("span");
+    const price = document.createElement("span");
     price.className = "menu-card__price";
     price.textContent = formatRupiah(item.harga);
 
@@ -1470,63 +1359,63 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     return card;
-  }
+  };
 
   /* --- Inisialisasi Carousel --- */
-  function initAboutCarousel() {
-    var root = qs("#aboutCarousel");
-    var track = qs("#aboutCarouselTrack");
-    var dotsWrap = qs("#aboutCarouselDots");
-    var prevBtn = qs("#aboutCarouselPrev");
-    var nextBtn = qs("#aboutCarouselNext");
-    var viewport = root ? qs(".about__carousel-viewport", root) : null;
+  const initAboutCarousel = () => {
+    const root = qs("#aboutCarousel");
+    const track = qs("#aboutCarouselTrack");
+    const dotsWrap = qs("#aboutCarouselDots");
+    const prevBtn = qs("#aboutCarouselPrev");
+    const nextBtn = qs("#aboutCarouselNext");
+    const viewport = root ? qs(".about__carousel-viewport", root) : null;
     if (!root || !track || !dotsWrap || !prevBtn || !nextBtn || !viewport) return;
 
-    var slides = qsa(".about__carousel-slide", track);
+    const slides = qsa(".about__carousel-slide", track);
     if (slides.length === 0) return;
 
-    var idx = 0;
-    var n = slides.length;
+    let idx = 0;
+    const n = slides.length;
 
-    function goTo(i) {
+    const goTo = (i) => {
       idx = Math.max(0, Math.min(n - 1, i));
       track.style.transform = "translateX(-" + (idx * 100) + "%)";
-      qsa(".about__carousel-dot", dotsWrap).forEach(function (d, j) {
+      qsa(".about__carousel-dot", dotsWrap).forEach((d, j) => {
         d.classList.toggle("is-active", j === idx);
       });
       prevBtn.disabled = idx <= 0;
       nextBtn.disabled = idx >= n - 1;
-    }
+    };
 
     dotsWrap.innerHTML = "";
-    slides.forEach(function (_, j) {
-      var dot = document.createElement("button");
+    slides.forEach((_, j) => {
+      const dot = document.createElement("button");
       dot.className = "about__carousel-dot" + (j === 0 ? " is-active" : "");
-      dot.addEventListener("click", function () { goTo(j); });
+      dot.addEventListener("click", () => { goTo(j); });
       dotsWrap.appendChild(dot);
     });
 
-    prevBtn.addEventListener("click", function () { goTo(idx - 1); });
-    nextBtn.addEventListener("click", function () { goTo(idx + 1); });
+    prevBtn.addEventListener("click", () => { goTo(idx - 1); });
+    nextBtn.addEventListener("click", () => { goTo(idx + 1); });
     goTo(0);
-  }
+  };
 
   /* --- Inisialisasi Reveal & Status --- */
-  function updateOpenStatus() {
-    var statusEl = qs("#openStatus");
+  const updateOpenStatus = () => {
+    const statusEl = qs("#openStatus");
     if (!statusEl) return;
-    var now = new Date();
-    var hour = now.getHours();
-    var isOpen = hour >= 9 && hour < 20;
+    const now = new Date();
+    const hour = now.getHours();
+    const isOpen = hour >= 9 && hour < 20;
     statusEl.textContent = isOpen ? "✅ Sekarang Buka" : "🔴 Sekarang Tutup";
     statusEl.className = isOpen ? "hours__note is-open" : "hours__note is-closed";
-  }
+  };
 
-  function initReveal() {
+  const initReveal = () => {
     if (!window.IntersectionObserver) return;
 
-    menuRevealObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
+    menuRevealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         entry.target.style.opacity = "1";
         entry.target.style.transform = "translateY(0)";
@@ -1534,27 +1423,28 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }, { threshold: 0.1 });
 
-    function bindReveal(el) {
+    const bindReveal = (el) => {
       if (!el) return;
       el.style.opacity = "0";
       el.style.transform = "translateY(20px)";
       el.style.transition = "all 0.6s ease-out";
       menuRevealObserver.observe(el);
-    }
+    };
 
     qsa(".section-header").forEach(bindReveal);
     qsa(".contact__top").forEach(bindReveal);
     qsa(".menu-card", qs("#menuGrid")).forEach(bindReveal);
-  }
+  };
 
   /* --- Eksekusi Akhir --- */
   cart = loadCart();
   cartName = loadCartName();
   cartOrderType = loadOrderType();
   cartPickupTime = loadPickupTime();
-  qsa('input[name="cartOrderType"]').forEach(function (el) {
+  
+  qsa('input[name="cartOrderType"]').forEach((el) => {
     el.checked = el.value === cartOrderType;
-    el.addEventListener("change", function () {
+    el.addEventListener("change", () => {
       if (!el.checked) return;
       if (el.value === "dinein" || el.value === "takeaway") {
         cartOrderType = el.value;
@@ -1564,23 +1454,27 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+  
   syncPickupUI();
+  
   if (cartPickupInput) {
     cartPickupInput.value = cartPickupTime;
-    cartPickupInput.addEventListener("input", function () {
+    cartPickupInput.addEventListener("input", () => {
       cartPickupTime = (cartPickupInput.value || "").slice(0, 10);
       savePickupTime();
       buildCheckoutLink();
     });
   }
+  
   if (cartNameInput) {
     cartNameInput.value = cartName;
-    cartNameInput.addEventListener("input", function () {
+    cartNameInput.addEventListener("input", () => {
       cartName = (cartNameInput.value || "").slice(0, 80);
       saveCartName();
       buildCheckoutLink();
     });
   }
+  
   setCartBadges();
   buildCheckoutLink();
 
@@ -1588,7 +1482,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (cartNavBtn) cartNavBtn.addEventListener("click", openCartDrawer);
   if (cartDrawerClose) cartDrawerClose.addEventListener("click", closeCartDrawer);
   if (cartDrawer) {
-    cartDrawer.addEventListener("click", function (e) {
+    cartDrawer.addEventListener("click", (e) => {
       if (e.target && e.target.closest("[data-cart-close]")) closeCartDrawer();
     });
   }
@@ -1600,14 +1494,14 @@ document.addEventListener("DOMContentLoaded", function () {
   initReveal();
   updateOpenStatus();
 
-  var scrollTicking = false;
+  let scrollTicking = false;
   window.addEventListener(
     "scroll",
-    function () {
+    () => {
       if (!navbar) return;
       if (!scrollTicking) {
         scrollTicking = true;
-        window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(() => {
           navbar.classList.toggle("scrolled", window.scrollY > 40);
           highlightActiveLink();
           scrollTicking = false;
