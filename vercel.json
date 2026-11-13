@@ -1,8 +1,8 @@
 {
   "redirects": [
     {
-      "source": "/:path*",
-      "destination": "https://www.kantinmini.web.id/:path*",
+      "source": "/(.*)",
+      "destination": "https://www.kantinmini.web.id/$1",
       "permanent": true
     }
   ]
